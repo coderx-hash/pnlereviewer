@@ -540,7 +540,7 @@
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDoc, getDocs, doc, setDoc, updateDoc, query, where, limit, onSnapshot, Timestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        // CONFIG FOR PNLEREVIEWER (UPDATED)
+        // CONFIG FOR PNLEREVIEWER
         const firebaseConfig = {
             apiKey: "AIzaSyBbwpEKp-vHN2mcAeEm6T_1te9tDK7vOO4",
             authDomain: "pnlereviewer-f9d1b.firebaseapp.com",
@@ -863,7 +863,7 @@
             document.getElementById(id).classList.remove('hidden');
         }
 
-        // --- QUIZ FUNCTIONS ---
+        // --- QUIZ FUNCTIONS (UPDATED WITH AUTO-DETECT) ---
         window.selectTopic = (topic) => {
             selectedCategory = topic;
             navTo('count');
@@ -879,36 +879,64 @@
 
             try {
                 let qRef = collection(db, "questions");
-                let qQuery;
-
-                if (selectedCategory === 'ALL') {
-                    qQuery = query(qRef, limit(limitCount * 3)); 
-                } else {
-                    qQuery = query(qRef, where("category", "==", selectedCategory), limit(limitCount));
-                }
+                
+                // Fetch large batch to filter client-side
+                let qQuery = query(qRef, limit(300)); 
 
                 const querySnapshot = await getDocs(qQuery);
+                
+                let tempQuestions = [];
+
                 querySnapshot.forEach((doc) => {
-                    currentQuestions.push({ id: doc.id, ...doc.data() });
+                    const data = doc.data();
+                    
+                    // 1. AUTO-DETECT CATEGORY
+                    const detectedNP = getNPCategory(data.category); 
+                    
+                    // 2. FILTERING LOGIC
+                    let isMatch = false;
+
+                    if (selectedCategory === 'ALL') {
+                        // All questions accepted for Mock Board
+                        isMatch = true;
+                    } else {
+                        // Match only if detected matches selected button
+                        if (detectedNP === selectedCategory) {
+                            isMatch = true;
+                        }
+                    }
+
+                    // 3. ADD IF MATCH
+                    if (isMatch) {
+                        tempQuestions.push({ 
+                            id: doc.id, 
+                            ...data, 
+                            detectedCategory: detectedNP // Saved for stats
+                        });
+                    }
                 });
 
-                currentQuestions.sort(() => Math.random() - 0.5);
-                currentQuestions = currentQuestions.slice(0, limitCount);
+                // 4. SHUFFLE
+                tempQuestions.sort(() => Math.random() - 0.5);
 
-                if (currentQuestions.length === 0) {
-                    alert("No questions found for this category yet. Please check again later.");
+                // 5. VALIDATE
+                if (tempQuestions.length === 0) {
+                    alert(`No questions found for ${selectedCategory}. Try creating questions with clearer category names.`);
                     navTo('topics');
                     document.getElementById('view-loading').classList.add('hidden');
                     return;
                 }
+
+                // 6. CUT TO LIMIT
+                currentQuestions = tempQuestions.slice(0, limitCount);
 
                 document.getElementById('view-loading').classList.add('hidden');
                 navTo('quiz');
                 renderQuestion();
 
             } catch (error) {
-                console.error(error);
-                alert("Error loading questions. Check your internet connection.");
+                console.error("Error loading quiz:", error);
+                alert("Error loading questions. Check connection.");
                 navTo('topics');
                 document.getElementById('view-loading').classList.add('hidden');
             }
@@ -943,7 +971,7 @@
                         <div id="q-timer-fill" class="timer-fill"></div>
                     </div>
                     
-                    <div style="font-size:0.7rem; color:var(--primary); margin-bottom:5px; text-transform:uppercase;">${q.category}</div>
+                    <div style="font-size:0.7rem; color:var(--primary); margin-bottom:5px; text-transform:uppercase;">${q.detectedCategory || q.category}</div>
                     <div class="question-text">${q.question}</div>
                     ${optionsHtml}
                 </div>
@@ -999,8 +1027,12 @@
                 </div>
             `;
             document.getElementById('next-btn').classList.remove('hidden');
-            updateLocalStats(q.category, isCorrect);
+            
+            // UPDATE STATS WITH DETECTED CATEGORY
+            const statsCategory = q.detectedCategory || getNPCategory(q.category);
+            updateLocalStats(statsCategory, isCorrect);
             updateLocalStats('ALL', isCorrect);
+            
             startNextQuestionTimer();
         };
 
@@ -1065,10 +1097,8 @@
             }
         };
 
-        // --- UPDATED STATS LOADER FOR PNLE (NP1-NP5) ---
         window.loadStatsUI = () => {
             const stats = userStats; 
-            // NOTE: These keys must match the IDs in the HTML (ring-NP1, etc)
             const cats = ['NP1', 'NP2', 'NP3', 'NP4', 'NP5', 'ALL'];
             
             cats.forEach(c => {
@@ -1104,6 +1134,37 @@
                 loadStatsUI();
             }
         };
+
+        // --- HELPER: AUTO-DETECT / TRANSLATOR ---
+        function getNPCategory(rawCategory) {
+            if (!rawCategory) return 'NP1'; // Fallback
+            
+            const lower = rawCategory.toLowerCase();
+
+            // NP1: Foundation, Community, Management, Research
+            if (lower.includes('fund') || lower.includes('comm') || lower.includes('chn') || lower.includes('lead') || lower.includes('manag') || lower.includes('res') || lower.includes('ethic')) {
+                return 'NP1';
+            }
+            // NP2: Maternal, Child, Pedia, OB-GYN
+            else if (lower.includes('mater') || lower.includes('child') || lower.includes('pedia') || lower.includes('ob') || lower.includes('gyne') || lower.includes('born')) {
+                return 'NP2';
+            }
+            // NP3: MedSurg 1 (General, Physio)
+            else if (lower.includes('surg') || lower.includes('med') || lower.includes('pharm') || lower.includes('physio') || lower.includes('integ') || lower.includes('endo')) {
+                return 'NP3';
+            }
+            // NP4: MedSurg 2 (Acute, Emergency, Special)
+            else if (lower.includes('crit') || lower.includes('emer') || lower.includes('acute') || lower.includes('cardio') || lower.includes('neuro') || lower.includes('onco')) {
+                return 'NP4';
+            }
+            // NP5: Psych, Mental Health
+            else if (lower.includes('psych') || lower.includes('mental') || lower.includes('behav') || lower.includes('abuse')) {
+                return 'NP5';
+            }
+            
+            // Default kung hindi ma-detect (safe fallback)
+            return 'NP3'; 
+        }
     </script>
 </body>
 </html>
