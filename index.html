@@ -74,9 +74,9 @@
         /* UTILS */
         .hidden { display: none !important; }
         .fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        .fade-out { animation: fadeOut 0.5s forwards; }
+        .fade-out { animation: fadeOut 0.8s forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; pointer-events: none; } }
+        @keyframes fadeOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(1.1); pointer-events: none; } }
 
         /* CARDS & UI */
         .card { 
@@ -144,13 +144,14 @@
             inset: 0; 
             width: 100vw; 
             height: 100vh; 
-            z-index: 9999; /* Highest priority */
+            z-index: 9999; 
             background: var(--bg-deep);
             display: flex; 
             flex-direction: column; 
             align-items: center; 
-            justify-content: center; /* Center Vertically and Horizontally */
+            justify-content: center;
             text-align: center;
+            padding: 20px;
         }
 
         /* LAYOUT */
@@ -247,9 +248,17 @@
         .loader { width: 48px; height: 48px; border: 3px solid #FFF; border-bottom-color: var(--primary); border-radius: 50%; display: inline-block; animation: rotation 1s linear infinite; }
         @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* Intro Scale */
-        .scale-up { animation: scaleUp 0.5s ease-out; }
+        /* Intro Scale & Movement */
+        .scale-up { animation: scaleUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes scaleUp { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .slide-up-fade { animation: slideUpFade 0.8s ease-out forwards; }
+        @keyframes slideUpFade { 
+            0% { transform: translateY(40px); opacity: 0; filter: blur(5px); } 
+            100% { transform: translateY(0); opacity: 1; filter: blur(0); } 
+        }
+
+        #intro-quote { max-width: 600px; line-height: 1.6; }
     </style>
 </head>
 <body>
@@ -338,15 +347,31 @@
     </div>
 
     <div id="view-intro" class="hidden">
-        <div id="intro-msg" class="scale-up" style="text-align: center; padding: 20px;">
+        
+        <div id="intro-msg" class="scale-up" style="text-align: center;">
             <i class='bx bxs-badge-check' style="font-size: 5rem; color: var(--success); margin-bottom: 20px;"></i>
             <h1 style="font-size: 2rem; margin-bottom: 10px; color: white;">SUBSCRIPTION ACTIVATED</h1>
             <p style="font-size: 1.2rem; color: var(--primary); font-family: var(--font-mono);">PREMIUM ACCESS: 90 DAYS</p>
         </div>
+        
         <div id="intro-countdown" class="hidden" style="text-align: center;">
             <div style="font-size: 1rem; color: var(--text-muted); margin-bottom: 20px;">REVIEW STARTING IN</div>
             <div id="cnt-val" style="font-size: 8rem; font-weight: 800; color: white;">3</div>
         </div>
+
+        <div id="intro-quote" class="hidden slide-up-fade" style="text-align: center;">
+            <i class='bx bxs-quote-left' style="font-size: 3rem; color: var(--primary); margin-bottom: 20px; opacity: 0.5;"></i>
+            <h2 id="quote-text" style="font-size: 1.8rem; font-weight: 300; font-style: italic; margin-bottom: 20px;">
+                "To do what nobody else will do, a way that nobody else can do, in spite of all we go through; that is to be a nurse."
+            </h2>
+            <div style="width: 50px; height: 2px; background: var(--primary); margin: 0 auto;"></div>
+        </div>
+        
+        <div id="intro-start" class="hidden scale-up" style="text-align: center;">
+             <h1 style="font-size: 3.5rem; font-weight: 800; color:white; margin-bottom: 10px; text-shadow: 0 0 30px rgba(20, 184, 166, 0.6);">LET'S START!</h1>
+             <p style="color: var(--text-muted);">Your future awaits.</p>
+        </div>
+
     </div>
 
     <div id="app-layout" class="layout hidden">
@@ -528,7 +553,7 @@
         let selectedCategory = '';
         let currentUserUID = null;
         let userStats = {};
-        let userAnsweredIds = []; // NEW: Tracks history
+        let userAnsweredIds = [];
         let mySessionId = null;
         let sessionUnsubscribe = null;
         
@@ -538,6 +563,20 @@
 
         const QUESTION_TIME_LIMIT = 60; 
         const NEXT_TIME_LIMIT = 5;      
+
+        // --- QUOTES FOR INTRO ---
+        const quotes = [
+            "Nurses dispense comfort, compassion, and caring without even a prescription.",
+            "Save one life, you're a hero. Save a hundred lives, you're a nurse.",
+            "Hardships often prepare ordinary people for an extraordinary destiny.",
+            "Your license is waiting. Go get it.",
+            "Study hard until you can say 'I am a Registered Nurse'.",
+            "Nursing is an art: and if it is to be made an art, it requires an exclusive devotion.",
+            "Every exam question answered is a step closer to your license.",
+            "Believe in yourself. You have survived 100% of your bad days.",
+            "The PRC License is earned, not given. Keep grinding.",
+            "Focus. Review. Pray. Repeat."
+        ];
 
         // --- AUTH & LOGIC ---
         const loginEmail = document.getElementById('inp-email');
@@ -710,15 +749,29 @@
             }
         });
 
+        // --- UPDATED ANIMATION LOGIC ---
         function playWelcomeAnimation(userData) {
             const introView = document.getElementById('view-intro');
             const introMsg = document.getElementById('intro-msg');
             const introCount = document.getElementById('intro-countdown');
+            const introQuote = document.getElementById('intro-quote');
+            const introStart = document.getElementById('intro-start');
             const cntVal = document.getElementById('cnt-val');
+            const quoteText = document.getElementById('quote-text');
 
+            // 1. SELECT RANDOM QUOTE
+            const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+            quoteText.innerText = `"${randomQuote}"`;
+
+            // 2. SHOW CONTAINER
             introView.classList.remove('hidden');
+
+            // 3. SEQUENCE
+            // Step A: Subscription Activated (already showing)
             setTimeout(() => {
                 introMsg.classList.add('hidden');
+                
+                // Step B: Countdown
                 introCount.classList.remove('hidden');
                 let count = 3;
                 const countInterval = setInterval(() => {
@@ -727,21 +780,34 @@
                         cntVal.innerText = count;
                     } else {
                         clearInterval(countInterval);
-                        cntVal.innerText = "LET'S START!";
-                        cntVal.style.fontSize = "3rem";
+                        
+                        // Step C: Show Quote
+                        introCount.classList.add('hidden');
+                        introQuote.classList.remove('hidden');
+
+                        // Wait for reading (3 seconds)
                         setTimeout(() => {
-                            introView.classList.add('fade-out'); 
-                            showView('app-layout'); 
-                            loadStatsUI();
-                            checkSubscription(userData);
+                            introQuote.classList.add('hidden');
+                            
+                            // Step D: Show Let's Start
+                            introStart.classList.remove('hidden');
+
+                            // Final Fade Out
                             setTimeout(() => {
-                                introView.classList.add('hidden');
-                                introView.classList.remove('fade-out'); 
-                            }, 500);
-                        }, 800);
+                                introView.classList.add('fade-out'); 
+                                showView('app-layout'); 
+                                loadStatsUI();
+                                checkSubscription(userData);
+                                
+                                setTimeout(() => {
+                                    introView.classList.add('hidden');
+                                    introView.classList.remove('fade-out'); 
+                                }, 800);
+                            }, 1500); // How long Let's Start shows
+                        }, 3000); // How long Quote shows
                     }
                 }, 1000); 
-            }, 2500);
+            }, 2000); // How long "Subscription Activated" shows
         }
 
         function checkSubscription(userData) {
