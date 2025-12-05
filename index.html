@@ -245,6 +245,9 @@
         .choice-wrong { background: rgba(239, 68, 68, 0.1) !important; border-color: var(--danger) !important; color: white !important; }
         .choice-wrong .choice-key { background: var(--danger); }
         
+        .rationale-panel { margin-top: 20px; padding: 20px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; }
+        .rationale-header { font-size: 0.8rem; font-weight: 700; color: var(--primary); text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+
         .loader { width: 48px; height: 48px; border: 3px solid #FFF; border-bottom-color: var(--primary); border-radius: 50%; display: inline-block; animation: rotation 1s linear infinite; }
         @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
@@ -749,7 +752,7 @@
             }
         });
 
-        // --- UPDATED ANIMATION LOGIC ---
+        // --- ANIMATION LOGIC ---
         function playWelcomeAnimation(userData) {
             const introView = document.getElementById('view-intro');
             const introMsg = document.getElementById('intro-msg');
@@ -759,19 +762,14 @@
             const cntVal = document.getElementById('cnt-val');
             const quoteText = document.getElementById('quote-text');
 
-            // 1. SELECT RANDOM QUOTE
             const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
             quoteText.innerText = `"${randomQuote}"`;
 
-            // 2. SHOW CONTAINER
             introView.classList.remove('hidden');
 
-            // 3. SEQUENCE
-            // Step A: Subscription Activated (already showing)
             setTimeout(() => {
                 introMsg.classList.add('hidden');
                 
-                // Step B: Countdown
                 introCount.classList.remove('hidden');
                 let count = 3;
                 const countInterval = setInterval(() => {
@@ -781,18 +779,13 @@
                     } else {
                         clearInterval(countInterval);
                         
-                        // Step C: Show Quote
                         introCount.classList.add('hidden');
                         introQuote.classList.remove('hidden');
 
-                        // Wait for reading (3 seconds)
                         setTimeout(() => {
                             introQuote.classList.add('hidden');
-                            
-                            // Step D: Show Let's Start
                             introStart.classList.remove('hidden');
 
-                            // Final Fade Out
                             setTimeout(() => {
                                 introView.classList.add('fade-out'); 
                                 showView('app-layout'); 
@@ -803,11 +796,11 @@
                                     introView.classList.add('hidden');
                                     introView.classList.remove('fade-out'); 
                                 }, 800);
-                            }, 1500); // How long Let's Start shows
-                        }, 3000); // How long Quote shows
+                            }, 1500); 
+                        }, 3000); 
                     }
                 }, 1000); 
-            }, 2000); // How long "Subscription Activated" shows
+            }, 2000); 
         }
 
         function checkSubscription(userData) {
@@ -871,7 +864,7 @@
             document.getElementById(id).classList.remove('hidden');
         }
 
-        // --- QUIZ FUNCTIONS (NO REPEAT + AUTO-DETECT) ---
+        // --- QUIZ FUNCTIONS (FIXED) ---
         window.selectTopic = (topic) => {
             selectedCategory = topic;
             navTo('count');
@@ -887,7 +880,7 @@
 
             try {
                 let qRef = collection(db, "questions");
-                let qQuery = query(qRef, limit(300)); // Get big batch
+                let qQuery = query(qRef, limit(300)); 
                 const querySnapshot = await getDocs(qQuery);
                 let tempQuestions = [];
 
@@ -908,16 +901,12 @@
                     }
                 });
 
-                // NO REPEAT LOGIC
-                // Filter out questions present in userAnsweredIds
                 let unAnswered = tempQuestions.filter(q => !userAnsweredIds.includes(q.id));
 
                 if (unAnswered.length === 0 && tempQuestions.length > 0) {
-                     // All questions in this category are answered. Recycle!
-                     alert("Amazing! You've completed all unique questions in this section. We will now review previous items.");
-                     unAnswered = tempQuestions; // Reset pool
+                     alert("You've completed all unique questions here! We will review previous items now.");
+                     unAnswered = tempQuestions; 
                 } else if (unAnswered.length < limitCount && tempQuestions.length > 0) {
-                     // Not enough new questions, fill with old ones
                      const needed = limitCount - unAnswered.length;
                      const answered = tempQuestions.filter(q => userAnsweredIds.includes(q.id));
                      answered.sort(() => Math.random() - 0.5);
@@ -956,10 +945,12 @@
             let optionsHtml = '';
             q.options.forEach((opt, idx) => {
                 const letters = ['A', 'B', 'C', 'D'];
+                // Clean the option text to prevent mismatches
+                const cleanOpt = opt.trim();
                 optionsHtml += `
-                    <button class="choice-btn" onclick="checkAnswer('${opt}', this)">
+                    <button class="choice-btn" onclick="checkAnswer(this, ${idx})">
                         <span class="choice-key">${letters[idx]}</span>
-                        ${opt}
+                        ${cleanOpt}
                     </button>
                 `;
             });
@@ -973,9 +964,11 @@
                     <div class="timer-bg"><div id="q-timer-fill" class="timer-fill"></div></div>
                     <div style="font-size:0.7rem; color:var(--primary); margin-bottom:5px; text-transform:uppercase;">${q.detectedCategory || q.category}</div>
                     <div class="question-text">${q.question}</div>
-                    ${optionsHtml}
+                    <div id="options-container">${optionsHtml}</div>
+                    
+                    <div id="rationale-area" class="hidden"></div>
                 </div>
-                <div id="rationale-area"></div>
+                
                 <button id="next-btn" class="btn btn-primary hidden" onclick="nextQuestion()" style="width:100%; margin-top:20px;">Next Question <i class='bx bx-right-arrow-alt'></i></button>
             `;
             startQuestionTimer();
@@ -996,19 +989,37 @@
             }, 1000);
         }
 
-        function handleTimeUp() { checkAnswer(null, null); }
+        function handleTimeUp() { checkAnswer(null, -1); }
 
-        window.checkAnswer = (selected, btnElement) => {
+        window.checkAnswer = (btnElement, selectedIdx) => {
+            // STOP TIMER IMMEDIATELY
             clearInterval(questionTimerInterval);
+            
+            const q = currentQuestions[currentIndex];
             const buttons = document.querySelectorAll('.choice-btn');
+            
+            // DISABLE BUTTONS
             buttons.forEach(b => b.classList.add('disabled'));
             buttons.forEach(b => b.onclick = null);
 
-            const q = currentQuestions[currentIndex];
             let isCorrect = false;
+            let selectedText = "";
 
-            if (selected) {
-                isCorrect = selected === q.correct;
+            if (selectedIdx >= 0 && btnElement) {
+                // Determine text from button structure (Label + Text)
+                // We compare based on index match or text inclusion usually, 
+                // but checking against q.correct is safer.
+                selectedText = btnElement.innerText.substring(2).trim(); // Remove 'A '
+                // Or easier: use the array index if your data guarantees order. 
+                // Assuming data.options and data.correct match by string content:
+                
+                if (q.options[selectedIdx] === q.correct || selectedText.includes(q.correct) || q.correct.includes(q.options[selectedIdx])) {
+                    isCorrect = true;
+                } else {
+                     // Fallback string comparison
+                     if(btnElement.innerText.includes(q.correct)) isCorrect = true;
+                }
+
                 if (isCorrect) {
                     score++;
                     btnElement.classList.add('choice-correct');
@@ -1017,21 +1028,31 @@
                     btnElement.classList.add('choice-wrong');
                 }
             }
-            buttons.forEach(b => { if(b.innerText.includes(q.correct)) b.classList.add('choice-correct'); });
 
-            document.getElementById('rationale-area').innerHTML = `
+            // HIGHLIGHT CORRECT ANSWER ALWAYS
+            buttons.forEach((b, idx) => {
+                if(q.options[idx] === q.correct || b.innerText.includes(q.correct)) {
+                    b.classList.add('choice-correct');
+                }
+            });
+
+            // SHOW RATIONALE (NO SCROLL)
+            const rArea = document.getElementById('rationale-area');
+            rArea.classList.remove('hidden');
+            rArea.innerHTML = `
                 <div class="rationale-panel fade-in">
-                    <div class="rationale-timer-bar"><strong>Rationale</strong></div>
-                    <div class="rationale-content">${q.rationale || "No explanation provided."}</div>
+                    <div class="rationale-header"><i class='bx bxs-bulb'></i> Rationale</div>
+                    <div class="rationale-content" style="font-size:0.9rem; line-height:1.6; color:var(--text-muted);">${q.rationale || "No explanation provided."}</div>
                 </div>
             `;
-            document.getElementById('next-btn').classList.remove('hidden');
             
+            // SHOW NEXT BUTTON
+            document.getElementById('next-btn').classList.remove('hidden');
+
             const statsCategory = q.detectedCategory || getNPCategory(q.category);
             updateLocalStats(statsCategory, isCorrect);
             updateLocalStats('ALL', isCorrect);
             
-            // TRACK HISTORY
             if (!userAnsweredIds.includes(q.id)) {
                 userAnsweredIds.push(q.id);
             }
@@ -1097,7 +1118,6 @@
         window.saveAndExit = async (shouldNavigate = true) => {
             if(currentUserUID) {
                 try { 
-                    // SAVE STATS AND ANSWER HISTORY
                     await updateDoc(doc(db, "users", currentUserUID), { 
                         stats: userStats,
                         answeredIds: userAnsweredIds
@@ -1107,12 +1127,10 @@
             }
         };
 
-        // --- MOTIVATIONAL DASHBOARD UPDATE ---
         window.loadStatsUI = () => {
             const stats = userStats; 
             const cats = ['NP1', 'NP2', 'NP3', 'NP4', 'NP5', 'ALL'];
             
-            // Text Elements
             const welcomeTitle = document.querySelector('.welcome-banner h2');
             const welcomeMsg = document.querySelector('.welcome-banner p');
 
@@ -1128,7 +1146,6 @@
                              txt.innerText = pct + "%";
                              document.getElementById('ans-ALL').innerText = stats[c].total;
 
-                             // --- DYNAMIC MOTIVATION LOGIC ---
                              if(pct >= 75) {
                                  welcomeTitle.innerText = "YOU ARE READY! 🎓";
                                  welcomeMsg.innerText = "Your mastery is high. Go get that license, RN!";
@@ -1167,22 +1184,35 @@
             }
         };
 
-        // --- HELPER: AUTO-DETECT / TRANSLATOR ---
+        // --- FIXED HELPER: AUTO-DETECT / TRANSLATOR ---
         function getNPCategory(rawCategory) {
             if (!rawCategory) return 'NP1'; // Fallback
             const lower = rawCategory.toLowerCase();
 
-            // NP1: Foundation, Community, Management, Research
-            if (lower.includes('fund') || lower.includes('comm') || lower.includes('chn') || lower.includes('lead') || lower.includes('manag') || lower.includes('res') || lower.includes('ethic')) return 'NP1';
-            // NP2: Maternal, Child, Pedia, OB-GYN
-            else if (lower.includes('mater') || lower.includes('child') || lower.includes('pedia') || lower.includes('ob') || lower.includes('gyne') || lower.includes('born')) return 'NP2';
-            // NP3: MedSurg 1
-            else if (lower.includes('surg') || lower.includes('med') || lower.includes('pharm') || lower.includes('physio') || lower.includes('integ') || lower.includes('endo')) return 'NP3';
-            // NP4: MedSurg 2
-            else if (lower.includes('crit') || lower.includes('emer') || lower.includes('acute') || lower.includes('cardio') || lower.includes('neuro') || lower.includes('onco')) return 'NP4';
-            // NP5: Psych
-            else if (lower.includes('psych') || lower.includes('mental') || lower.includes('behav') || lower.includes('abuse')) return 'NP5';
-            
+            // 1. NP5 - PSYCH (Distinct)
+            if (lower.includes('psych') || lower.includes('mental') || lower.includes('behav') || lower.includes('abuse') || lower.includes('coping') || lower.includes('violence') || lower.includes('crisis')) return 'NP5';
+
+            // 2. NP1 - FOUNDATION / CHN / PALMER
+            if (lower.includes('fund') || lower.includes('comm') || lower.includes('chn') || lower.includes('lead') || lower.includes('manag') || lower.includes('res') || lower.includes('ethic') || lower.includes('legal') || lower.includes('his') || lower.includes('theory')) return 'NP1';
+
+            // 3. NP2 - MCN / PEDIA
+            if (lower.includes('mater') || lower.includes('mcn') || lower.includes('ob') || lower.includes('gyne') || lower.includes('labor') || lower.includes('deliv') || lower.includes('child') || lower.includes('pedia') || lower.includes('neo') || lower.includes('born') || lower.includes('growth') || lower.includes('fam')) return 'NP2';
+
+            // 4. NP4 - MED SURG PART 2 (Critical, Ortho, Neuro, Cardio, EENT, Emergency)
+            // CHECK THIS BEFORE NP3 to avoid generic 'med' or 'surg' catching it.
+            if (lower.includes('cardio') || lower.includes('heart') || lower.includes('vasc') || 
+                lower.includes('respi') || lower.includes('pulm') || lower.includes('lung') || 
+                lower.includes('neuro') || lower.includes('brain') || lower.includes('stroke') || 
+                lower.includes('crit') || lower.includes('emer') || lower.includes('trauma') || lower.includes('burn') || 
+                lower.includes('onco') || lower.includes('cancer') || lower.includes('neoplasm') || 
+                lower.includes('renal') || lower.includes('kidney') || lower.includes('urinary') || 
+                lower.includes('ortho') || lower.includes('bone') || lower.includes('musc') || 
+                lower.includes('eent') || lower.includes('eye') || lower.includes('ear')) {
+                return 'NP4';
+            }
+
+            // 5. NP3 - MED SURG PART 1 (General, Endo, GI, Fluids, Pharma, Periop, Integ)
+            // This acts as the "Catch-all" for other medical topics to ensure questions are found.
             return 'NP3'; 
         }
     </script>
