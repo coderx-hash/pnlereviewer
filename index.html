@@ -15,16 +15,16 @@
     <style>
         :root {
             /* PNLE / MEDICAL THEME PALETTE */
-            --bg-deep: #0f172a;         
-            --bg-surface: #1e293b;      
-            --primary: #14b8a6;         
+            --bg-deep: #0f172a;          
+            --bg-surface: #1e293b;       
+            --primary: #14b8a6;          
             --primary-dim: rgba(20, 184, 166, 0.1);
             --primary-glow: rgba(20, 184, 166, 0.4);
-            --secondary: #94a3b8;       
-            --accent: #f43f5e;          
-            --success: #10b981;         
-            --warning: #f59e0b;         
-            --danger: #ef4444;          
+            --secondary: #94a3b8;        
+            --accent: #f43f5e;           
+            --success: #10b981;          
+            --warning: #f59e0b;          
+            --danger: #ef4444;           
             --text-main: #f8fafc;
             --text-muted: #cbd5e1;
             --glass-bg: rgba(30, 41, 59, 0.8);
@@ -531,7 +531,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDoc, getDocs, doc, setDoc, updateDoc, query, where, limit, onSnapshot, Timestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDoc, getDocs, doc, setDoc, updateDoc, query, where, limit, onSnapshot, orderBy, Timestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
         // CONFIG FOR PNLEREVIEWER
         const firebaseConfig = {
@@ -879,13 +879,30 @@
             currentIndex = 0;
 
             try {
+                // FIXED: ADDED orderBy TO FETCH LATEST QUESTIONS
                 let qRef = collection(db, "questions");
-                let qQuery = query(qRef, limit(300)); 
-                const querySnapshot = await getDocs(qQuery);
+                // Note: Ensure you have an index for this if you use orderBy. 
+                // Since this is a simple app, we will use limit(500) and client filter to be safe against missing indexes for now.
+                // But better to use orderBy("timestamp", "desc") if index exists.
+                // I will add orderBy, if it fails due to index, remove it.
+                // To be safe for you, I'll use simple query first, but client side sort.
+                let qQuery = query(qRef, orderBy("timestamp", "desc"), limit(300)); 
+                
+                let querySnapshot;
+                try {
+                     querySnapshot = await getDocs(qQuery);
+                } catch(e) {
+                     // Fallback if index missing
+                     console.log("Index missing, falling back to basic query");
+                     qQuery = query(qRef, limit(300));
+                     querySnapshot = await getDocs(qQuery);
+                }
+                
                 let tempQuestions = [];
 
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
+                    // FIXED: Category Detection
                     const detectedNP = getNPCategory(data.category); 
                     
                     let isMatch = false;
@@ -916,7 +933,7 @@
                 unAnswered.sort(() => Math.random() - 0.5);
                 
                 if (unAnswered.length === 0) {
-                    alert(`No questions found for ${selectedCategory}.`);
+                    alert(`No questions found for ${selectedCategory}. Check if you uploaded questions for this category.`);
                     navTo('topics');
                     document.getElementById('view-loading').classList.add('hidden');
                     return;
@@ -945,7 +962,6 @@
             let optionsHtml = '';
             q.options.forEach((opt, idx) => {
                 const letters = ['A', 'B', 'C', 'D'];
-                // Clean the option text to prevent mismatches
                 const cleanOpt = opt.trim();
                 optionsHtml += `
                     <button class="choice-btn" onclick="checkAnswer(this, ${idx})">
@@ -1006,17 +1022,11 @@
             let selectedText = "";
 
             if (selectedIdx >= 0 && btnElement) {
-                // Determine text from button structure (Label + Text)
-                // We compare based on index match or text inclusion usually, 
-                // but checking against q.correct is safer.
-                selectedText = btnElement.innerText.substring(2).trim(); // Remove 'A '
-                // Or easier: use the array index if your data guarantees order. 
-                // Assuming data.options and data.correct match by string content:
+                selectedText = btnElement.innerText.substring(2).trim(); 
                 
                 if (q.options[selectedIdx] === q.correct || selectedText.includes(q.correct) || q.correct.includes(q.options[selectedIdx])) {
                     isCorrect = true;
                 } else {
-                     // Fallback string comparison
                      if(btnElement.innerText.includes(q.correct)) isCorrect = true;
                 }
 
@@ -1187,6 +1197,13 @@
         // --- FIXED HELPER: AUTO-DETECT / TRANSLATOR ---
         function getNPCategory(rawCategory) {
             if (!rawCategory) return 'NP1'; // Fallback
+            
+            // FIXED: Check if it is explicitly already NP1-NP5
+            const upper = rawCategory.toUpperCase();
+            if (['NP1', 'NP2', 'NP3', 'NP4', 'NP5'].includes(upper)) {
+                return upper;
+            }
+
             const lower = rawCategory.toLowerCase();
 
             // 1. NP5 - PSYCH (Distinct)
