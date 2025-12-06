@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Nursify PH | PNLE Reviewer</title>
+    <title>Nursify PH | Premium PNLE Reviewer</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -23,11 +23,12 @@
             --secondary: #94a3b8;        
             --accent: #f43f5e;           
             --success: #10b981;          
-            --warning: #f59e0b;          
+            --warning: #f59e0b;
+            --gold: #fbbf24;          
             --danger: #ef4444;           
             --text-main: #f8fafc;
             --text-muted: #cbd5e1;
-            --glass-bg: rgba(30, 41, 59, 0.8);
+            --glass-bg: rgba(30, 41, 59, 0.85);
             --glass-border: rgba(255, 255, 255, 0.1);
             --glass-highlight: rgba(255, 255, 255, 0.15);
             --font-main: "Inter", sans-serif;
@@ -104,6 +105,15 @@
             border: 1px solid rgba(255,255,255,0.1);
         }
         .btn-primary:hover { filter: brightness(1.1); box-shadow: 0 6px 20px rgba(20, 184, 166, 0.5); }
+        
+        .btn-premium {
+            background: linear-gradient(135deg, var(--gold), #d97706);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        .btn-premium:hover { filter: brightness(1.1); box-shadow: 0 6px 20px rgba(251, 191, 36, 0.5); }
+
         .btn-outline { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); color: var(--text-muted); }
         .btn-outline:hover { border-color: var(--primary); color: var(--text-main); background: var(--primary-dim); }
         .btn-ghost { background: transparent; color: var(--text-muted); }
@@ -122,13 +132,36 @@
             display: flex; height: 100vh; width: 100%; justify-content: center; align-items: center; 
             z-index: 100; position: fixed; inset: 0; padding: 20px;
         }
-        .auth-card { width: 100%; max-width: 400px; padding: 40px 30px; max-height: 90vh; overflow-y: auto;}
+        .auth-card { width: 100%; max-width: 420px; padding: 40px 30px; max-height: 90vh; overflow-y: auto;}
+        
         .brand-logo { 
-            width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary), #0f766e); 
-            border-radius: 20px; display: flex; align-items: center; justify-content: center; 
-            font-size: 2.5rem; color: white; margin: 0 auto 20px; box-shadow: 0 0 20px rgba(20, 184, 166, 0.3);
+            width: 70px; height: 70px; background: linear-gradient(135deg, var(--primary), #0f766e); 
+            border-radius: 18px; display: flex; align-items: center; justify-content: center; 
+            font-size: 2.2rem; color: white; margin: 0 auto 15px; box-shadow: 0 0 20px rgba(20, 184, 166, 0.3);
             transform: rotate(-5deg);
         }
+        
+        /* SUBSCRIPTION CARD STYLES */
+        .sub-header {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(217, 119, 6, 0.05));
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .sub-price { font-size: 1.8rem; font-weight: 800; color: var(--gold); text-shadow: 0 2px 10px rgba(251, 191, 36, 0.2); }
+        .sub-tag { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        
+        .step-badge {
+            display: inline-block; padding: 4px 8px; border-radius: 6px; font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .step-1 { background: rgba(20, 184, 166, 0.2); color: var(--primary); border: 1px solid rgba(20, 184, 166, 0.3); }
+        .step-2 { background: rgba(251, 191, 36, 0.2); color: var(--gold); border: 1px solid rgba(251, 191, 36, 0.3); }
+
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 300;
             display: flex; justify-content: center; align-items: center; padding: 20px;
@@ -272,46 +305,60 @@
     </div>
 
     <div id="view-auth" class="auth-wrapper fade-in">
+        
         <div id="form-login" class="card auth-card">
             <div class="brand-logo"><i class='bx bxs-capsule'></i></div>
             <h2 style="text-align: center; margin-bottom: 5px;">Nursify PH</h2>
-            <p style="text-align: center; color: var(--text-muted); margin-bottom: 30px; font-size: 0.9rem;">PNLE Reviewer Portal</p>
+            <p style="text-align: center; color: var(--text-muted); margin-bottom: 30px; font-size: 0.9rem;">Reviewer Portal</p>
             
             <div class="input-group"><input type="email" id="inp-email" class="input" placeholder="Enter Email"></div>
             <div class="input-group"><input type="password" id="inp-pass" class="input" placeholder="Enter Password"></div>
             
             <button id="btn-login" class="btn btn-primary" style="width: 100%; margin-top: 10px;">SECURE LOGIN <i class='bx bx-log-in-circle'></i></button>
             <div style="text-align: center; margin-top: 20px;">
-                <span class="btn-ghost" onclick="toggleAuthMode()" style="font-size: 0.8rem; cursor: pointer;">Create an Account</span>
+                <span class="btn-ghost" onclick="toggleAuthMode()" style="font-size: 0.8rem; cursor: pointer;">Get Premium Access (₱499)</span>
             </div>
             <div id="login-msg" style="text-align:center; margin-top:15px; color:var(--danger); font-size:0.8rem;"></div>
         </div>
 
         <div id="form-register" class="card auth-card hidden">
-            <h2 style="text-align: center; margin-bottom: 5px; color: var(--success);">REGISTER</h2>
-            <p style="text-align: center; color: var(--text-muted); margin-bottom: 20px; font-size: 0.9rem;">Step 1: Send GCash Payment</p>
             
-            <div style="background: rgba(16, 185, 129, 0.1); padding: 15px; border-radius: 8px; border: 1px dashed var(--success); margin-bottom: 20px;">
-                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--success); font-weight: bold;">Send to GCash</div>
-                <div style="font-size: 1.2rem; font-family: var(--font-mono); color: white; margin: 5px 0;">0948 374 8304</div>
-                <div style="font-size: 0.8rem; color: var(--text-muted);">Name: A...LO</div>
+            <div class="sub-header">
+                <div class="sub-tag">Premium Access</div>
+                <div class="sub-price">₱499</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted);">Validity: 90 Days</div>
             </div>
 
-            <div class="input-group">
-                <label class="input-label">Payment Sender Details</label>
-                <input type="text" id="reg-sender-name" class="input" placeholder="GCash Sender Name" style="margin-bottom: 10px;">
-                <input type="number" id="reg-sender-num" class="input" placeholder="GCash Sender Number (09...)" style="margin-bottom: 10px;">
+            <div style="margin-bottom: 25px;">
+                <div class="step-badge step-1">Step 1: Payment</div>
+                <div style="background: rgba(0, 87, 255, 0.1); padding: 15px; border-radius: 8px; border: 1px dashed #3b82f6; display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <div style="font-size: 0.7rem; text-transform: uppercase; color: #3b82f6; font-weight: bold;">Send via GCash</div>
+                        <div style="font-size: 1.1rem; font-family: var(--font-mono); color: white; margin: 2px 0;">0948 374 8304</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Name: A...LO</div>
+                    </div>
+                    <div style="font-size: 2rem; color: #3b82f6;"><i class='bx bxs-wallet'></i></div>
+                </div>
             </div>
 
-            <div class="input-group">
-                <label class="input-label">Account Details</label>
-                <input type="text" id="reg-ref" class="input" placeholder="Reference No." style="border-color: var(--success); margin-bottom: 10px;">
-                <input type="email" id="reg-email" class="input" placeholder="Email Address" style="margin-bottom: 10px;">
-                <input type="password" id="reg-pass" class="input" placeholder="Password (Min 6 chars)">
+            <div>
+                <div class="step-badge step-2">Step 2: Fill Up Details</div>
+                
+                <div class="input-group">
+                    <label class="input-label">Payment Reference</label>
+                    <input type="text" id="reg-ref" class="input" placeholder="GCash Ref No. (Required)" style="border-color: var(--gold);">
+                </div>
+
+                <div class="input-group">
+                    <label class="input-label">Account Info</label>
+                    <input type="text" id="reg-sender-name" class="input" placeholder="Your Name" style="margin-bottom: 10px;">
+                    <input type="email" id="reg-email" class="input" placeholder="Email Address" style="margin-bottom: 10px;">
+                    <input type="password" id="reg-pass" class="input" placeholder="Password (Min 6 chars)">
+                    <input type="hidden" id="reg-sender-num" value="0000000000"> </div>
             </div>
             
-            <button id="btn-register" class="btn btn-primary" style="width: 100%; background: var(--success); color: #000;">SUBMIT REGISTRATION</button>
-            <div style="text-align: center; margin-top: 20px;">
+            <button id="btn-register" class="btn btn-premium" style="width: 100%; margin-top: 10px;">SUBMIT & VERIFY PAYMENT</button>
+            <div style="text-align: center; margin-top: 15px;">
                 <span class="btn-ghost" onclick="toggleAuthMode()" style="font-size: 0.8rem; cursor: pointer;">Back to Login</span>
             </div>
             <div id="reg-msg" style="text-align:center; margin-top:15px; color:var(--warning); font-size:0.8rem;"></div>
@@ -321,9 +368,9 @@
     <div id="view-pending" class="auth-wrapper fade-in hidden">
         <div class="card auth-card" style="text-align: center; border-top: 4px solid var(--warning);">
             <div style="font-size: 4rem; color: var(--warning); margin-bottom: 15px;"><i class='bx bx-time-five'></i></div>
-            <h2 style="color: #fff; margin-bottom: 5px; font-weight: 700;">APPROVAL PENDING</h2>
-            <p style="color: var(--warning); font-family: var(--font-mono); font-size: 0.8rem; margin-bottom: 25px;">STATUS: VERIFICATION IN PROGRESS</p>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px;">Verifying payment usually takes 1-24 hours.</p>
+            <h2 style="color: #fff; margin-bottom: 5px; font-weight: 700;">PAYMENT VERIFICATION</h2>
+            <p style="color: var(--warning); font-family: var(--font-mono); font-size: 0.8rem; margin-bottom: 25px;">STATUS: REVIEWING REF NO.</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 25px;">We are checking your GCash Reference Number. Access will be granted within 24 hours.</p>
             <button id="btn-force-logout" class="btn btn-outline" style="width: 100%;">Logout & Check Later</button>
         </div>
     </div>
@@ -650,7 +697,8 @@
         // 2. REGISTRATION
         document.getElementById('btn-register').addEventListener('click', async () => {
             if(regPass.value.length < 6) return document.getElementById('reg-msg').innerText = "Password too short.";
-            if(!regRef.value || !regSenderName.value || !regSenderNum.value) return document.getElementById('reg-msg').innerText = "All payment fields are required.";
+            if(!regRef.value) return document.getElementById('reg-msg').innerText = "Please enter Payment Reference Number.";
+            if(!regSenderName.value || !regEmail.value) return document.getElementById('reg-msg').innerText = "All fields are required.";
             
             try {
                 const userCred = await createUserWithEmailAndPassword(auth, regEmail.value, regPass.value);
@@ -658,7 +706,7 @@
                     email: regEmail.value,
                     gcashReference: regRef.value, 
                     senderName: regSenderName.value,
-                    senderNumber: regSenderNum.value,
+                    senderNumber: regSenderNum.value || "N/A",
                     status: "pending", 
                     createdAt: new Date(),
                     subscriptionStart: null, 
@@ -879,13 +927,7 @@
             currentIndex = 0;
 
             try {
-                // FIXED: ADDED orderBy TO FETCH LATEST QUESTIONS
                 let qRef = collection(db, "questions");
-                // Note: Ensure you have an index for this if you use orderBy. 
-                // Since this is a simple app, we will use limit(500) and client filter to be safe against missing indexes for now.
-                // But better to use orderBy("timestamp", "desc") if index exists.
-                // I will add orderBy, if it fails due to index, remove it.
-                // To be safe for you, I'll use simple query first, but client side sort.
                 let qQuery = query(qRef, orderBy("timestamp", "desc"), limit(300)); 
                 
                 let querySnapshot;
@@ -902,7 +944,6 @@
 
                 querySnapshot.forEach((doc) => {
                     const data = doc.data();
-                    // FIXED: Category Detection
                     const detectedNP = getNPCategory(data.category); 
                     
                     let isMatch = false;
@@ -1198,7 +1239,6 @@
         function getNPCategory(rawCategory) {
             if (!rawCategory) return 'NP1'; // Fallback
             
-            // FIXED: Check if it is explicitly already NP1-NP5
             const upper = rawCategory.toUpperCase();
             if (['NP1', 'NP2', 'NP3', 'NP4', 'NP5'].includes(upper)) {
                 return upper;
@@ -1206,17 +1246,12 @@
 
             const lower = rawCategory.toLowerCase();
 
-            // 1. NP5 - PSYCH (Distinct)
             if (lower.includes('psych') || lower.includes('mental') || lower.includes('behav') || lower.includes('abuse') || lower.includes('coping') || lower.includes('violence') || lower.includes('crisis')) return 'NP5';
 
-            // 2. NP1 - FOUNDATION / CHN / PALMER
             if (lower.includes('fund') || lower.includes('comm') || lower.includes('chn') || lower.includes('lead') || lower.includes('manag') || lower.includes('res') || lower.includes('ethic') || lower.includes('legal') || lower.includes('his') || lower.includes('theory')) return 'NP1';
 
-            // 3. NP2 - MCN / PEDIA
             if (lower.includes('mater') || lower.includes('mcn') || lower.includes('ob') || lower.includes('gyne') || lower.includes('labor') || lower.includes('deliv') || lower.includes('child') || lower.includes('pedia') || lower.includes('neo') || lower.includes('born') || lower.includes('growth') || lower.includes('fam')) return 'NP2';
 
-            // 4. NP4 - MED SURG PART 2 (Critical, Ortho, Neuro, Cardio, EENT, Emergency)
-            // CHECK THIS BEFORE NP3 to avoid generic 'med' or 'surg' catching it.
             if (lower.includes('cardio') || lower.includes('heart') || lower.includes('vasc') || 
                 lower.includes('respi') || lower.includes('pulm') || lower.includes('lung') || 
                 lower.includes('neuro') || lower.includes('brain') || lower.includes('stroke') || 
@@ -1228,8 +1263,6 @@
                 return 'NP4';
             }
 
-            // 5. NP3 - MED SURG PART 1 (General, Endo, GI, Fluids, Pharma, Periop, Integ)
-            // This acts as the "Catch-all" for other medical topics to ensure questions are found.
             return 'NP3'; 
         }
     </script>
