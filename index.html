@@ -928,7 +928,8 @@
 
             try {
                 let qRef = collection(db, "questions");
-                let qQuery = query(qRef, orderBy("timestamp", "desc"), limit(300)); 
+                // *** UPDATED TO LIMIT 1000 ***
+                let qQuery = query(qRef, orderBy("timestamp", "desc"), limit(1000)); 
                 
                 let querySnapshot;
                 try {
@@ -936,7 +937,8 @@
                 } catch(e) {
                      // Fallback if index missing
                      console.log("Index missing, falling back to basic query");
-                     qQuery = query(qRef, limit(300));
+                     // *** UPDATED TO LIMIT 1000 ***
+                     qQuery = query(qRef, limit(1000));
                      querySnapshot = await getDocs(qQuery);
                 }
                 
