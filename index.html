@@ -928,8 +928,10 @@
 
             try {
                 let qRef = collection(db, "questions");
-                // *** UPDATED TO LIMIT 1000 ***
-                let qQuery = query(qRef, orderBy("timestamp", "desc"), limit(1000)); 
+                
+                // *** MAJOR FIX: REMOVED limit(1000) ***
+                // This ensures we get ALL questions from DB to check against answeredIds
+                let qQuery = query(qRef, orderBy("timestamp", "desc")); 
                 
                 let querySnapshot;
                 try {
@@ -937,8 +939,7 @@
                 } catch(e) {
                      // Fallback if index missing
                      console.log("Index missing, falling back to basic query");
-                     // *** UPDATED TO LIMIT 1000 ***
-                     qQuery = query(qRef, limit(1000));
+                     qQuery = query(qRef);
                      querySnapshot = await getDocs(qQuery);
                 }
                 
@@ -961,12 +962,22 @@
                     }
                 });
 
+                // Filter out questions present in userAnsweredIds
                 let unAnswered = tempQuestions.filter(q => !userAnsweredIds.includes(q.id));
 
+                // If ran out of unique questions
                 if (unAnswered.length === 0 && tempQuestions.length > 0) {
-                     alert("You've completed all unique questions here! We will review previous items now.");
-                     unAnswered = tempQuestions; 
+                     if(confirm("Awesome! You've answered ALL available questions for this category. Do you want to reset and review again?")) {
+                         // Logic to clear history for this category could go here, 
+                         // but for now we just reuse the old ones randomly.
+                         unAnswered = tempQuestions; 
+                     } else {
+                         navTo('topics');
+                         document.getElementById('view-loading').classList.add('hidden');
+                         return;
+                     }
                 } else if (unAnswered.length < limitCount && tempQuestions.length > 0) {
+                     // If we have fewer un-answered than requested, fill the rest with random answered ones
                      const needed = limitCount - unAnswered.length;
                      const answered = tempQuestions.filter(q => userAnsweredIds.includes(q.id));
                      answered.sort(() => Math.random() - 0.5);
@@ -1106,12 +1117,25 @@
             updateLocalStats(statsCategory, isCorrect);
             updateLocalStats('ALL', isCorrect);
             
+            // *** REAL-TIME SAVING FIX ***
             if (!userAnsweredIds.includes(q.id)) {
                 userAnsweredIds.push(q.id);
+                // Save immediately so refreshing/logging out doesn't lose progress
+                saveSingleQuestionProgress(q.id);
             }
             
             startNextQuestionTimer();
         };
+
+        async function saveSingleQuestionProgress(qId) {
+            if(currentUserUID) {
+                try {
+                    await updateDoc(doc(db, "users", currentUserUID), { 
+                        answeredIds: userAnsweredIds 
+                    });
+                } catch(e) { console.log("Bg save err", e); }
+            }
+        }
 
         function startNextQuestionTimer() {
             let nextTimeLeft = NEXT_TIME_LIMIT;
