@@ -10,11 +10,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet"/>
     
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
         :root {
-            /* PNLE / MEDICAL THEME PALETTE */
+            /* --- DARK THEME PALETTE (System Default) --- */
             --bg-deep: #0f172a;          
             --bg-surface: #1e293b;       
             --primary: #14b8a6;          
@@ -28,15 +29,19 @@
             --danger: #ef4444;           
             --text-main: #f8fafc;
             --text-muted: #cbd5e1;
+            
+            /* GLASS EFFECTS */
             --glass-bg: rgba(30, 41, 59, 0.85);
             --glass-border: rgba(255, 255, 255, 0.1);
             --glass-highlight: rgba(255, 255, 255, 0.15);
+            
+            /* TYPOGRAPHY & SHAPE */
             --font-main: "Inter", sans-serif;
             --font-mono: "JetBrains Mono", monospace;
             --radius-md: 16px;
         }
 
-        /* RESET & BASE */
+        /* --- GLOBAL RESET --- */
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; -webkit-tap-highlight-color: transparent; }
         
         body { 
@@ -48,7 +53,7 @@
             position: relative;
         }
 
-        /* AMBIENT BG */
+        /* --- AMBIENT BACKGROUND ANIMATION --- */
         .ambient-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden;
             background: radial-gradient(circle at center, #1e293b 0%, #020617 100%);
@@ -67,19 +72,27 @@
             100% { transform: scale(1); opacity: 0.2; }
         }
 
-        /* SCROLLBAR */
+        /* --- UTILITIES --- */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(20, 184, 166, 0.3); border-radius: 10px; }
 
-        /* UTILS */
         .hidden { display: none !important; }
+        
+        /* Smooth Fade In (Anti-Flicker) */
         .fade-in { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
         .fade-out { animation: fadeOut 0.8s forwards; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(1.1); pointer-events: none; } }
+        
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        @keyframes fadeOut { 
+            from { opacity: 1; transform: scale(1); } 
+            to { opacity: 0; transform: scale(1.1); pointer-events: none; } 
+        }
 
-        /* CARDS & UI */
+        /* --- CARD & UI COMPONENTS --- */
         .card { 
             background: var(--glass-bg); 
             backdrop-filter: blur(20px); 
@@ -92,12 +105,39 @@
             overflow: hidden;
         }
 
+        /* *** NEW WHITE THEME FOR REGISTRATION *** */
+        .card-light {
+            background: #ffffff !important;
+            color: #1e293b !important;
+            border: 1px solid #e2e8f0 !important;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2) !important;
+        }
+        .card-light .input {
+            background: #f1f5f9;
+            color: #0f172a;
+            border: 1px solid #cbd5e1;
+        }
+        .card-light .input:focus {
+            background: #fff;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.2);
+        }
+        .card-light .input-label { color: #64748b; }
+        .card-light .sub-header {
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+        }
+        .card-light .sub-price { color: #d97706; text-shadow: none; }
+        .card-light .step-badge { filter: brightness(0.95); }
+
+        /* BUTTONS */
         .btn { 
             padding: 12px 24px; border-radius: 12px; font-weight: 600; cursor: pointer; border: none; font-family: inherit; 
             transition: all 0.2s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem;
             position: relative; overflow: hidden; user-select: none;
         }
         .btn:active { transform: scale(0.96); }
+        
         .btn-primary { 
             background: linear-gradient(135deg, var(--primary), #0f766e); 
             color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.2);
@@ -116,9 +156,17 @@
 
         .btn-outline { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); color: var(--text-muted); }
         .btn-outline:hover { border-color: var(--primary); color: var(--text-main); background: var(--primary-dim); }
+        
+        /* Light Card Button Overrides */
+        .card-light .btn-outline { background: transparent; border: 1px solid #cbd5e1; color: #64748b; }
+        .card-light .btn-outline:hover { border-color: var(--primary); color: var(--primary); background: #f0fdfa; }
+        .card-light .btn-ghost { color: #64748b; }
+        .card-light .btn-ghost:hover { background: #f1f5f9; color: #0f172a; }
+
         .btn-ghost { background: transparent; color: var(--text-muted); }
         .btn-ghost:hover { color: var(--text-main); background: rgba(255,255,255,0.05); }
 
+        /* INPUTS */
         .input-group { margin-bottom: 12px; position: relative; }
         .input-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; display: block; margin-left: 5px;}
         .input { 
@@ -127,7 +175,23 @@
         }
         .input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-dim); background: rgba(0,0,0,0.5); }
 
-        /* AUTH & MODALS */
+        /* --- PLAN SELECTION GRID --- */
+        .plan-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 15px; }
+        .plan-option {
+            border: 2px solid #e2e8f0; border-radius: 10px; padding: 10px 5px; text-align: center; cursor: pointer; transition: 0.2s;
+            background: #fff; position: relative;
+        }
+        .plan-option:hover { background: #f8fafc; }
+        .plan-option.selected {
+            border-color: var(--gold); background: #fffbeb; box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.3); transform: translateY(-2px);
+        }
+        .plan-dur { font-size: 0.75rem; font-weight: 700; color: #64748b; text-transform: uppercase; }
+        .plan-price { font-size: 1rem; font-weight: 800; color: #0f172a; margin: 4px 0; }
+        .plan-tag { font-size: 0.55rem; color: #fff; background: #d97706; border-radius: 4px; padding: 2px 4px; display: none; width: fit-content; margin: 0 auto;}
+        .plan-option.selected .plan-tag { display: block; }
+        .plan-option.selected .plan-price { color: #d97706; }
+
+        /* --- AUTH & MODAL WRAPPERS --- */
         .auth-wrapper { 
             display: flex; height: 100vh; width: 100%; justify-content: center; align-items: center; 
             z-index: 100; position: fixed; inset: 0; padding: 20px;
@@ -141,16 +205,11 @@
             transform: rotate(-5deg);
         }
         
-        /* SUBSCRIPTION CARD STYLES */
         .sub-header {
             background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(217, 119, 6, 0.05));
             border: 1px solid rgba(251, 191, 36, 0.3);
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-            margin-bottom: 20px;
-            position: relative;
-            overflow: hidden;
+            border-radius: 12px; padding: 15px; text-align: center; margin-bottom: 20px;
+            position: relative; overflow: hidden;
         }
         .sub-price { font-size: 1.8rem; font-weight: 800; color: var(--gold); text-shadow: 0 2px 10px rgba(251, 191, 36, 0.2); }
         .sub-tag { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
@@ -161,6 +220,10 @@
         }
         .step-1 { background: rgba(20, 184, 166, 0.2); color: var(--primary); border: 1px solid rgba(20, 184, 166, 0.3); }
         .step-2 { background: rgba(251, 191, 36, 0.2); color: var(--gold); border: 1px solid rgba(251, 191, 36, 0.3); }
+        
+        /* Light Theme Badges */
+        .card-light .step-1 { background: #ccfbf1; color: #0f766e; border-color: #99f6e4; }
+        .card-light .step-2 { background: #fef3c7; color: #b45309; border-color: #fde68a; }
 
         .modal-overlay {
             position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 300;
@@ -171,33 +234,9 @@
             box-shadow: 0 0 50px rgba(244, 63, 94, 0.2); padding: 30px;
         }
 
-        /* --- FIXED INTRO OVERLAY --- */
-        #view-intro {
-            position: fixed; 
-            inset: 0; 
-            width: 100vw; 
-            height: 100vh; 
-            z-index: 9999; 
-            background: var(--bg-deep);
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center;
-            text-align: center;
-            padding: 20px;
-        }
-
-        /* TRIAL TIMER STYLE */
-        .trial-banner {
-            position: fixed; top: 0; left: 0; width: 100%; 
-            background: var(--danger); color: white; 
-            text-align: center; padding: 8px; font-weight: 700; z-index: 200;
-            font-family: var(--font-mono); font-size: 0.8rem;
-            box-shadow: 0 5px 20px rgba(239, 68, 68, 0.4);
-        }
-
-        /* LAYOUT */
+        /* --- LAYOUT GRID --- */
         .layout { display: flex; height: 100vh; overflow: hidden; width: 100%; }
+        
         .sidebar { 
             width: 280px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border-right: 1px solid var(--glass-border); 
             display: flex; flex-direction: column; z-index: 50; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -205,6 +244,7 @@
         }
         .sidebar-header { padding: 30px; display: flex; align-items: center; gap: 12px; font-weight: 800; font-size: 1.4rem; }
         .sidebar-header i { color: var(--primary); font-size: 1.6rem; }
+        
         .nav-links { padding: 0 15px; flex: 1; }
         .nav-item { 
             padding: 14px 20px; border-radius: 10px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 12px; 
@@ -223,9 +263,9 @@
         .header { 
             height: 70px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; 
             padding: 0 20px; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(10px); z-index: 40;
-            margin-top: 0; /* Adjusted for trial */
+            margin-top: 0;
         }
-        body.trial-active .header { margin-top: 35px; } /* Push down for banner */
+        body.trial-active .header { margin-top: 35px; } 
         body.trial-active .sidebar { padding-top: 35px; }
 
         .scroll-area { flex: 1; overflow-y: auto; padding: 20px; scroll-behavior: smooth; }
@@ -241,7 +281,7 @@
             .mastery-card { flex-direction: column-reverse; text-align: center; gap: 20px; }
         }
 
-        /* DASHBOARD */
+        /* --- DASHBOARD & STATS --- */
         .welcome-banner {
             background: linear-gradient(135deg, var(--bg-surface), rgba(20, 184, 166, 0.1));
             border: 1px solid var(--glass-border); border-radius: 16px; padding: 30px; margin-bottom: 25px;
@@ -258,7 +298,14 @@
             text-align: center; transition: 0.3s; cursor: default;
         }
 
-        /* QUIZ */
+        /* --- HISTORY TABLE --- */
+        .history-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .history-table th { text-align: left; color: var(--text-muted); padding: 10px; font-size: 0.8rem; border-bottom: 1px solid var(--glass-border); }
+        .history-table td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+        .badge-pending { background: rgba(245, 158, 11, 0.2); color: var(--warning); padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; }
+        .badge-active { background: rgba(16, 185, 129, 0.2); color: var(--success); padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; }
+
+        /* --- QUIZ UI ELEMENTS --- */
         .ring-container { position: relative; width: 70px; height: 70px; margin: 0 auto 10px; }
         .ring-svg { transform: rotate(-90deg); width: 100%; height: 100%; }
         .ring-circle-bg { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 6; }
@@ -275,6 +322,7 @@
         .timer-fill.warning { background: var(--warning); }
         .timer-fill.danger { background: var(--danger); }
         .question-text { font-size: 1.15rem; line-height: 1.6; font-weight: 600; margin-bottom: 25px; color: #fff; }
+        
         .choice-btn {
             display: flex; align-items: center; width: 100%; text-align: left; padding: 16px; margin-bottom: 12px; 
             background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border); border-radius: 12px; 
@@ -291,7 +339,6 @@
         .choice-wrong { background: rgba(239, 68, 68, 0.1) !important; border-color: var(--danger) !important; color: white !important; }
         .choice-wrong .choice-key { background: var(--danger); }
         .choice-selected-neutral { background: rgba(59, 130, 246, 0.2) !important; border-color: #3b82f6 !important; color: white !important; }
-        .choice-selected-neutral .choice-key { background: #3b82f6; }
         
         .rationale-panel { margin-top: 20px; padding: 20px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; }
         .rationale-header { font-size: 0.8rem; font-weight: 700; color: var(--primary); text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
@@ -299,7 +346,7 @@
         .loader { width: 48px; height: 48px; border: 3px solid #FFF; border-bottom-color: var(--primary); border-radius: 50%; display: inline-block; animation: rotation 1s linear infinite; }
         @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* Intro Scale & Movement */
+        /* Intro Animations */
         .scale-up { animation: scaleUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes scaleUp { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
@@ -310,6 +357,13 @@
         }
 
         #intro-quote { max-width: 600px; line-height: 1.6; }
+        .trial-banner {
+            position: fixed; top: 0; left: 0; width: 100%; 
+            background: var(--danger); color: white; 
+            text-align: center; padding: 8px; font-weight: 700; z-index: 200;
+            font-family: var(--font-mono); font-size: 0.8rem;
+            box-shadow: 0 5px 20px rgba(239, 68, 68, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -340,6 +394,7 @@
             <button onclick="closePopout()" class="btn btn-primary" style="width: 100%; background: var(--accent); border-color: var(--accent);">Got it! <i class='bx bx-check'></i></button>
         </div>
     </div>
+
     <div id="trial-banner" class="trial-banner hidden">
         FREE TRIAL MODE: <span id="trial-timer-val">60</span>s REMAINING
     </div>
@@ -368,52 +423,60 @@
             </button>
 
             <div style="text-align: center; margin-top: 20px;">
-                <span class="btn-ghost" onclick="toggleAuthMode()" style="font-size: 0.8rem; cursor: pointer;">Get Premium Access (₱149)</span>
+                <span class="btn-ghost" onclick="toggleAuthMode()" style="font-size: 0.8rem; cursor: pointer;">Create Account</span>
             </div>
             <div id="login-msg" style="text-align:center; margin-top:15px; color:var(--danger); font-size:0.8rem;"></div>
         </div>
 
-        <div id="form-register" class="card auth-card hidden">
+        <div id="form-register" class="card card-light auth-card hidden">
             
+            <h2 style="text-align: center; color:#0f172a; margin-bottom: 5px;">Create Account</h2>
+            <p style="text-align: center; color: #64748b; font-size: 0.8rem; margin-bottom: 20px;">Join the Elite Nursing Review</p>
+
+            <div class="step-badge step-1">Step 1: Choose Plan</div>
+            <div class="plan-grid">
+                <div class="plan-option" id="plan-1y" onclick="selectPlan('1y', 649)">
+                    <div class="plan-dur">1 Year</div>
+                    <div class="plan-price">₱649</div>
+                    <div class="plan-tag">BEST VALUE</div>
+                </div>
+                <div class="plan-option" id="plan-6m" onclick="selectPlan('6m', 349)">
+                    <div class="plan-dur">6 Mos</div>
+                    <div class="plan-price">₱349</div>
+                    <div class="plan-tag">POPULAR</div>
+                </div>
+                <div class="plan-option" id="plan-3m" onclick="selectPlan('3m', 149)">
+                    <div class="plan-dur">3 Mos</div>
+                    <div class="plan-price">₱149</div>
+                    <div class="plan-tag">BASIC</div>
+                </div>
+            </div>
+
             <div class="sub-header">
-                <div class="sub-tag">Premium Access</div>
-                <div class="sub-price">₱149</div>
-                <div style="font-size: 0.7rem; color: var(--text-muted);">Validity: 90 Days</div>
+                <div class="sub-tag">Total Amount Due</div>
+                <div class="sub-price" id="display-price">₱149</div>
+                <div style="font-size: 0.7rem; color: #64748b;">Send via GCash: <span style="font-family: var(--font-mono); font-weight: bold; color: #0f172a;">0948 374 8304</span></div>
             </div>
 
-            <div style="margin-bottom: 25px;">
-                <div class="step-badge step-1">Step 1: Payment</div>
-                <div style="background: rgba(0, 87, 255, 0.1); padding: 15px; border-radius: 8px; border: 1px dashed #3b82f6; display: flex; align-items: center; justify-content: space-between;">
-                    <div>
-                        <div style="font-size: 0.7rem; text-transform: uppercase; color: #3b82f6; font-weight: bold;">Send via GCash</div>
-                        <div style="font-size: 1.1rem; font-family: var(--font-mono); color: white; margin: 2px 0;">0948 374 8304</div>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">Name: A...LO</div>
-                    </div>
-                    <div style="font-size: 2rem; color: #3b82f6;"><i class='bx bxs-wallet'></i></div>
-                </div>
+            <div class="step-badge step-2">Step 2: Details</div>
+            
+            <div class="input-group">
+                <label class="input-label">Payment Reference</label>
+                <input type="text" id="reg-ref" class="input" placeholder="GCash Ref No. (Required)" style="border-color: var(--gold);">
             </div>
 
-            <div>
-                <div class="step-badge step-2">Step 2: Fill Up Details</div>
-                
-                <div class="input-group">
-                    <label class="input-label">Payment Reference</label>
-                    <input type="text" id="reg-ref" class="input" placeholder="GCash Ref No. (Required)" style="border-color: var(--gold);">
-                </div>
-
-                <div class="input-group">
-                    <label class="input-label">Account Info</label>
-                    <input type="text" id="reg-sender-name" class="input" placeholder="Your Name" style="margin-bottom: 10px;">
-                    <input type="email" id="reg-email" class="input" placeholder="Email Address" style="margin-bottom: 10px;">
-                    <input type="password" id="reg-pass" class="input" placeholder="Password (Min 6 chars)">
-                    <input type="hidden" id="reg-sender-num" value="0000000000"> </div>
+            <div class="input-group">
+                <label class="input-label">Account Info</label>
+                <input type="text" id="reg-sender-name" class="input" placeholder="Your Name" style="margin-bottom: 10px;">
+                <input type="email" id="reg-email" class="input" placeholder="Email Address" style="margin-bottom: 10px;">
+                <input type="password" id="reg-pass" class="input" placeholder="Password (Min 6 chars)">
             </div>
             
             <button id="btn-register" class="btn btn-premium" style="width: 100%; margin-top: 10px;">SUBMIT & VERIFY PAYMENT</button>
             <div style="text-align: center; margin-top: 15px;">
                 <span class="btn-ghost" onclick="toggleAuthMode()" style="font-size: 0.8rem; cursor: pointer;">Back to Login</span>
             </div>
-            <div id="reg-msg" style="text-align:center; margin-top:15px; color:var(--warning); font-size:0.8rem;"></div>
+            <div id="reg-msg" style="text-align:center; margin-top:15px; color: #b45309; font-size:0.8rem;"></div>
         </div>
     </div>
 
@@ -422,10 +485,6 @@
             <div style="font-size: 3rem; color: var(--gold); margin-bottom: 10px;"><i class='bx bxs-lock-alt'></i></div>
             <h3 style="margin-bottom: 10px; color: white;">TIME IS UP!</h3>
             <p style="color: var(--text-muted); margin-bottom: 25px; font-size: 0.9rem;">Your 1-Minute Free Trial has ended.</p>
-            <div style="background: rgba(251, 191, 36, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                <div style="font-weight: 800; color: var(--gold); font-size: 1.2rem;">UNLOCK PREMIUM</div>
-                <div style="font-size: 0.8rem; color: var(--text-muted);">Access Full 90 Days for just ₱149</div>
-            </div>
             <button onclick="goToPremiumRegistration()" class="btn btn-premium" style="width: 100%;">GET PREMIUM ACCESS <i class='bx bx-right-arrow-alt'></i></button>
         </div>
     </div>
@@ -494,13 +553,6 @@
                         <div style="font-size: 0.8rem; color: var(--text-muted);">100 Items per Subject (500 Total)</div>
                     </div>
                 </div>
-                <div style="display: flex; gap: 15px; margin-bottom: 12px;">
-                    <i class='bx bx-timer' style="color: var(--warning); font-size: 1.2rem; margin-top: 2px;"></i>
-                    <div>
-                        <div style="font-weight: 600; color: white;">Time Limit</div>
-                        <div style="font-size: 0.8rem; color: var(--text-muted);">2 Hours per Subject</div>
-                    </div>
-                </div>
                  <div style="display: flex; gap: 15px;">
                     <i class='bx bx-hide' style="color: var(--danger); font-size: 1.2rem; margin-top: 2px;"></i>
                     <div>
@@ -517,32 +569,25 @@
         </div>
     </div>
 
-    <div id="view-intro" class="hidden">
-        
+    <div id="view-intro" class="hidden" style="position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 9999; background: var(--bg-deep); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px;">
         <div id="intro-msg" class="scale-up" style="text-align: center;">
             <i class='bx bxs-badge-check' style="font-size: 5rem; color: var(--success); margin-bottom: 20px;"></i>
             <h1 style="font-size: 2rem; margin-bottom: 10px; color: white;">SUBSCRIPTION ACTIVATED</h1>
-            <p style="font-size: 1.2rem; color: var(--primary); font-family: var(--font-mono);">PREMIUM ACCESS: 90 DAYS</p>
+            <p style="font-size: 1.2rem; color: var(--primary); font-family: var(--font-mono);">PREMIUM ACCESS GRANTED</p>
         </div>
-        
         <div id="intro-countdown" class="hidden" style="text-align: center;">
             <div style="font-size: 1rem; color: var(--text-muted); margin-bottom: 20px;">REVIEW STARTING IN</div>
             <div id="cnt-val" style="font-size: 8rem; font-weight: 800; color: white;">3</div>
         </div>
-
         <div id="intro-quote" class="hidden slide-up-fade" style="text-align: center;">
             <i class='bx bxs-quote-left' style="font-size: 3rem; color: var(--primary); margin-bottom: 20px; opacity: 0.5;"></i>
-            <h2 id="quote-text" style="font-size: 1.8rem; font-weight: 300; font-style: italic; margin-bottom: 20px;">
-                "To do what nobody else will do, a way that nobody else can do, in spite of all we go through; that is to be a nurse."
-            </h2>
+            <h2 id="quote-text" style="font-size: 1.8rem; font-weight: 300; font-style: italic; margin-bottom: 20px;">"Quote"</h2>
             <div style="width: 50px; height: 2px; background: var(--primary); margin: 0 auto;"></div>
         </div>
-        
         <div id="intro-start" class="hidden scale-up" style="text-align: center;">
              <h1 style="font-size: 3.5rem; font-weight: 800; color:white; margin-bottom: 10px; text-shadow: 0 0 30px rgba(20, 184, 166, 0.6);">LET'S START!</h1>
              <p style="color: var(--text-muted);">Your future awaits.</p>
         </div>
-
     </div>
 
     <div id="app-layout" class="layout hidden">
@@ -553,6 +598,7 @@
             <div class="nav-links">
                 <div class="nav-item active" onclick="navTo('dashboard'); toggleSidebar()"><i class='bx bxs-dashboard'></i> Dashboard</div>
                 <div class="nav-item" onclick="navTo('topics'); toggleSidebar()"><i class='bx bxs-book-content'></i> Start Review</div>
+                <div class="nav-item" onclick="navTo('history'); toggleSidebar()"><i class='bx bx-history'></i> Payment History</div>
             </div>
             
             <div style="padding: 0 15px; margin-top: 20px; text-align: center;">
@@ -565,7 +611,7 @@
 
             <div class="sub-box">
                 <div style="font-size: 0.7rem; color: var(--primary); font-weight: 700; margin-bottom: 5px;">RN ACCESS</div>
-                <div id="days-remaining" class="sub-days">90</div>
+                <div id="days-remaining" class="sub-days">--</div>
                 <div style="font-size: 0.8rem; color: var(--text-muted);">Days Remaining</div>
                 <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 5px;">Expires: <span id="expire-date-txt" style="color:white;">-</span></div>
                 <div style="margin-top: 10px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px;">
@@ -614,14 +660,8 @@
                             </div>
                             <div style="position: relative; width: 150px; height: 150px;">
                                 <svg width="150" height="150" style="transform: rotate(-90deg);">
-                                    <defs>
-                                        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                                            <stop offset="0%" style="stop-color:var(--primary);stop-opacity:1" />
-                                            <stop offset="100%" style="stop-color:#0f766e;stop-opacity:1" />
-                                        </linearGradient>
-                                    </defs>
                                     <circle cx="75" cy="75" r="65" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="12" />
-                                    <circle id="ring-ALL" cx="75" cy="75" r="65" fill="none" stroke="url(#grad1)" stroke-width="12" stroke-dasharray="408" stroke-dashoffset="408" stroke-linecap="round" style="filter: drop-shadow(0 0 10px rgba(20, 184, 166, 0.4)); transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);"/>
+                                    <circle id="ring-ALL" cx="75" cy="75" r="65" fill="none" stroke="var(--primary)" stroke-width="12" stroke-dasharray="408" stroke-dashoffset="408" stroke-linecap="round" style="filter: drop-shadow(0 0 10px rgba(20, 184, 166, 0.4)); transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);"/>
                                 </svg>
                                 <i class='bx bxs-badge-check' style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3rem; color: rgba(255,255,255,0.8);"></i>
                             </div>
@@ -651,31 +691,26 @@
                             <h3>NP 1</h3>
                             <p style="font-size: 0.8rem; color: var(--text-muted);">Foundation of Nursing, CHN, Prof. Adj.</p>
                         </button>
-                        
                         <button onclick="selectTopic('NP2')" class="card" style="padding: 30px; text-align: left; transition: 0.3s; cursor:pointer;">
                             <i class='bx bxs-baby-carriage' style="font-size: 2.5rem; color: var(--accent); margin-bottom: 15px;"></i>
                             <h3>NP 2</h3>
                             <p style="font-size: 0.8rem; color: var(--text-muted);">Maternal & Child Health, Pediatric Nursing</p>
                         </button>
-                        
                         <button onclick="selectTopic('NP3')" class="card" style="padding: 30px; text-align: left; transition: 0.3s; cursor:pointer;">
                             <i class='bx bxs-capsule' style="font-size: 2.5rem; color: var(--success); margin-bottom: 15px;"></i>
                             <h3>NP 3</h3>
                             <p style="font-size: 0.8rem; color: var(--text-muted);">Med-Surg (General), Pharmacology</p>
                         </button>
-                        
                         <button onclick="selectTopic('NP4')" class="card" style="padding: 30px; text-align: left; transition: 0.3s; cursor:pointer;">
                             <i class='bx bxs-heart' style="font-size: 2.5rem; color: var(--warning); margin-bottom: 15px;"></i>
                             <h3>NP 4</h3>
                             <p style="font-size: 0.8rem; color: var(--text-muted);">Med-Surg (Specialties), Critical Care</p>
                         </button>
-                        
                         <button onclick="selectTopic('NP5')" class="card" style="padding: 30px; text-align: left; transition: 0.3s; cursor:pointer;">
                             <i class='bx bxs-brain' style="font-size: 2.5rem; color: var(--danger); margin-bottom: 15px;"></i>
                             <h3>NP 5</h3>
                             <p style="font-size: 0.8rem; color: var(--text-muted);">Psychiatric Nursing & Mental Health</p>
                         </button>
-                        
                         <button onclick="selectTopic('ALL')" class="card" style="padding: 30px; text-align: left; transition: 0.3s; cursor:pointer; border-color: var(--primary);">
                             <i class='bx bxs-layer' style="font-size: 2.5rem; color: var(--primary); margin-bottom: 15px;"></i>
                             <h3>Mock Board Exam</h3>
@@ -698,36 +733,53 @@
                     </div>
                 </div>
 
+                <div id="view-history" class="hidden fade-in">
+                    <div class="card" style="padding: 25px;">
+                        <h3 style="margin-bottom: 15px;">Transaction History</h3>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Filtered by: <span style="color:white; font-weight:bold;">Most Recent</span></p>
+                        <table class="history-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="history-list">
+                                <tr><td colspan="4" style="text-align:center; padding: 20px;">Loading records...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 <div id="view-quiz" class="hidden fade-in quiz-container"></div>
             </div>
         </main>
     </div>
 
     <script type="module">
-        // Import functions from the CDN
+        // --- IMPORTS ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-analytics.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-        import { getFirestore, collection, addDoc, getDoc, getDocs, doc, setDoc, updateDoc, query, where, limit, onSnapshot, orderBy, Timestamp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, setDoc, updateDoc, getDoc, query, orderBy, Timestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js";
 
-        // CONFIG FOR PNLEXAM (UPDATED AS REQUESTED)
+        // --- FIREBASE CONFIG ---
         const firebaseConfig = {
           apiKey: "AIzaSyBbwpEKp-vHN2mcAeEm6T_1te9tDK7vOO4",
           authDomain: "pnlereviewer-f9d1b.firebaseapp.com",
           projectId: "pnlereviewer-f9d1b",
           storageBucket: "pnlereviewer-f9d1b.firebasestorage.app",
           messagingSenderId: "222831488170",
-          appId: "1:222831488170:web:57e17d32f42cbffa3e74d3",
-          measurementId: "G-PLSJ1JSXC3"
+          appId: "1:222831488170:web:57e17d32f42cbffa3e74d3"
         };
 
-        // Initialize Firebase
+        // --- INIT ---
         const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app); 
         const auth = getAuth(app);       
         const db = getFirestore(app);    
 
-        // --- GLOBAL STATE ---
+        // --- GLOBAL VARIABLES ---
         let currentQuestions = [];
         let currentIndex = 0;
         let score = 0;
@@ -738,48 +790,58 @@
         let mySessionId = null;
         let sessionUnsubscribe = null;
         
+        // Timer Variables
         let questionTimerInterval;
         let nextQuestionInterval;
         let autoRedirectInterval; 
         
-        // NEW GLOBAL FOR SEQUENTIAL EXAM
+        // Exam Logic
         let isFinalExamMode = false;
         let currentExamPart = 1; // 1 to 5
         let examScores = { 1:0, 2:0, 3:0, 4:0, 5:0 };
 
-        // TRIAL MODE VARS
+        // Trial Logic
         let isTrialMode = false;
         let trialInterval;
-        let trialSeconds = 60; // 1 MINUTE
+        let trialSeconds = 60; 
+
+        // Registration Logic
+        let selectedPlan = { id: '3m', price: 149, name: '3 Months' }; // Default
 
         const QUESTION_TIME_LIMIT = 60; 
         const NEXT_TIME_LIMIT = 5;      
-        const EXAM_PART_LIMIT = 7200; // 2 HOURS in Seconds
-
-        // --- QUOTES FOR INTRO ---
+        
         const quotes = [
             "Nurses dispense comfort, compassion, and caring without even a prescription.",
             "Save one life, you're a hero. Save a hundred lives, you're a nurse.",
             "Hardships often prepare ordinary people for an extraordinary destiny.",
             "Your license is waiting. Go get it.",
             "Study hard until you can say 'I am a Registered Nurse'.",
-            "Nursing is an art: and if it is to be made an art, it requires an exclusive devotion.",
             "Every exam question answered is a step closer to your license.",
-            "Believe in yourself. You have survived 100% of your bad days.",
-            "The PRC License is earned, not given. Keep grinding.",
             "Focus. Review. Pray. Repeat."
         ];
 
-        // --- AUTH & LOGIC ---
-        const loginEmail = document.getElementById('inp-email');
-        const loginPass = document.getElementById('inp-pass');
-        const regEmail = document.getElementById('reg-email');
-        const regPass = document.getElementById('reg-pass');
-        const regRef = document.getElementById('reg-ref');
-        const regSenderName = document.getElementById('reg-sender-name');
-        const regSenderNum = document.getElementById('reg-sender-num');
-        
-        // --- 0. TRIAL MODE LOGIC ---
+        // --- 1. PRICING & REGISTRATION LOGIC ---
+        window.selectPlan = (planId, price) => {
+            document.querySelectorAll('.plan-option').forEach(el => el.classList.remove('selected'));
+            document.getElementById('plan-' + planId).classList.add('selected');
+            document.getElementById('display-price').innerText = `₱${price}`;
+            
+            let name = '3 Months';
+            if(planId === '6m') name = '6 Months';
+            if(planId === '1y') name = '1 Year';
+            
+            selectedPlan = { id: planId, price: price, name: name };
+        };
+        // Set default
+        selectPlan('3m', 149);
+
+        window.toggleAuthMode = () => {
+            document.getElementById('form-login').classList.toggle('hidden');
+            document.getElementById('form-register').classList.toggle('hidden');
+        };
+
+        // --- 2. TRIAL LOGIC ---
         window.checkAndStartTrial = async () => {
              document.getElementById('trial-checking').classList.remove('hidden');
              try {
@@ -796,16 +858,14 @@
                  if(trialSnap.exists()) {
                      document.getElementById('view-trial-used').classList.remove('hidden');
                  } else {
-                     await setDoc(trialRef, {
-                         timestamp: new Date(),
-                         ua: navigator.userAgent
-                     });
+                     await setDoc(trialRef, { timestamp: new Date(), ua: navigator.userAgent });
                      startTrialSession();
                  }
              } catch (error) {
                  console.error("Trial Check Error:", error);
                  document.getElementById('trial-checking').classList.add('hidden');
-                 alert("Unable to verify eligibility. Please check internet connection.");
+                 // Fallback to allow trial if IP check fails (UX decision)
+                 startTrialSession();
              }
         };
 
@@ -819,17 +879,14 @@
              document.getElementById('view-auth').classList.add('hidden');
              document.body.classList.add('trial-active');
              
-             showView('app-layout');
-             loadStatsUI();
+             document.getElementById('app-layout').classList.remove('hidden'); // Show layout immediately
+             navTo('dashboard');
              
              document.getElementById('trial-banner').classList.remove('hidden');
              trialInterval = setInterval(() => {
                  trialSeconds--;
                  document.getElementById('trial-timer-val').innerText = trialSeconds;
-                 
-                 if(trialSeconds <= 0) {
-                     endTrialMode();
-                 }
+                 if(trialSeconds <= 0) endTrialMode();
              }, 1000);
         }
 
@@ -837,6 +894,7 @@
             clearInterval(trialInterval);
             clearInterval(questionTimerInterval);
             clearInterval(nextQuestionInterval);
+            // Hide everything
             ['view-dashboard', 'view-topics', 'view-count', 'view-quiz', 'app-layout'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
@@ -853,10 +911,13 @@
              document.getElementById('form-register').classList.remove('hidden'); 
         };
 
-        // 1. LOGIN LOGIC
+        // --- 3. AUTH LOGIC ---
+        // LOGIN
         document.getElementById('btn-login').addEventListener('click', async () => {
+            const email = document.getElementById('inp-email').value;
+            const pass = document.getElementById('inp-pass').value;
             try {
-                const userCred = await signInWithEmailAndPassword(auth, loginEmail.value, loginPass.value);
+                const userCred = await signInWithEmailAndPassword(auth, email, pass);
                 const uid = userCred.user.uid;
                 const userDoc = await getDoc(doc(db, "users", uid));
                 if(userDoc.exists()) {
@@ -873,6 +934,56 @@
             }
         });
 
+        // REGISTER
+        document.getElementById('btn-register').addEventListener('click', async () => {
+            const email = document.getElementById('reg-email').value;
+            const pass = document.getElementById('reg-pass').value;
+            const name = document.getElementById('reg-sender-name').value;
+            const ref = document.getElementById('reg-ref').value;
+
+            if(!email || !pass || !name || !ref) {
+                 document.getElementById('reg-msg').innerText = "All fields are required.";
+                 return;
+            }
+            if(pass.length < 6) {
+                 document.getElementById('reg-msg').innerText = "Password too short.";
+                 return;
+            }
+
+            try {
+                const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+                const now = new Date();
+                
+                // Initial Transaction
+                const initTx = {
+                    date: now.toISOString(),
+                    amount: selectedPlan.price,
+                    description: `Premium Access (${selectedPlan.name})`,
+                    status: 'Pending',
+                    ref: ref
+                };
+
+                await setDoc(doc(db, "users", userCred.user.uid), {
+                    email: email,
+                    displayName: name,
+                    status: "pending", 
+                    createdAt: now,
+                    plan: selectedPlan.id, // Save chosen plan
+                    subscriptionStart: null, 
+                    subscriptionExpired: null,
+                    stats: {},
+                    answeredIds: [], 
+                    transactionHistory: [initTx],
+                    isSessionActive: false,
+                    currentSessionId: null
+                });
+                alert("Registration submitted! Please wait for approval.");
+            } catch (error) {
+                document.getElementById('reg-msg').innerText = error.message;
+            }
+        });
+
+        // SESSION MANAGEMENT
         window.forceSessionClaim = async () => {
              const user = auth.currentUser;
              if(user) {
@@ -910,55 +1021,22 @@
             document.getElementById('view-kicked').classList.remove('hidden'); 
         }
 
-        // 2. REGISTRATION
-        document.getElementById('btn-register').addEventListener('click', async () => {
-            if(regPass.value.length < 6) return document.getElementById('reg-msg').innerText = "Password too short.";
-            if(!regRef.value) return document.getElementById('reg-msg').innerText = "Please enter Payment Reference Number.";
-            if(!regSenderName.value || !regEmail.value) return document.getElementById('reg-msg').innerText = "All fields are required.";
-            
-            try {
-                const userCred = await createUserWithEmailAndPassword(auth, regEmail.value, regPass.value);
-                await setDoc(doc(db, "users", userCred.user.uid), {
-                    email: regEmail.value,
-                    gcashReference: regRef.value, 
-                    senderName: regSenderName.value,
-                    senderNumber: regSenderNum.value || "N/A",
-                    status: "pending", 
-                    createdAt: new Date(),
-                    subscriptionStart: null, 
-                    subscriptionExpired: null,
-                    stats: {},
-                    answeredIds: [], 
-                    isSessionActive: false,
-                    currentSessionId: null
-                });
-                alert("Registration submitted! Please wait for approval.");
-            } catch (error) {
-                document.getElementById('reg-msg').innerText = error.message;
-            }
-        });
-
-        // 3. LOGOUT
+        // LOGOUT
         window.forceLogout = async () => {
             if(isTrialMode) { location.reload(); return; }
-
             if(currentUserUID) {
                 try {
-                    await updateDoc(doc(db, "users", currentUserUID), {
-                        isSessionActive: false,
-                        currentSessionId: null
-                    });
+                    await updateDoc(doc(db, "users", currentUserUID), { isSessionActive: false, currentSessionId: null });
                 } catch(e) { console.log("Logout error", e); }
             }
             if(sessionUnsubscribe) sessionUnsubscribe();
             signOut(auth);
             location.reload(); 
         };
-        
         document.getElementById('btn-logout').addEventListener('click', () => window.forceLogout());
         document.getElementById('btn-force-logout').addEventListener('click', () => window.forceLogout());
 
-        // 4. AUTH OBSERVER
+        // AUTH STATE OBSERVER (ANTI-FLICKER)
         onAuthStateChanged(auth, async (user) => {
             if (isTrialMode) return; 
 
@@ -968,12 +1046,19 @@
                 
                 if (userSnap.exists()) {
                     const userData = userSnap.data();
+                    
                     if (userData.status === 'active') {
-
+                        // Handle Subscription Dates
                         if (!userData.subscriptionStart || !userData.subscriptionExpired) {
                             const now = new Date();
                             const expiry = new Date();
-                            expiry.setDate(now.getDate() + 90); 
+                            // Logic based on PLAN
+                            let daysToAdd = 90; // Default 3m
+                            if(userData.plan === '6m') daysToAdd = 180;
+                            if(userData.plan === '1y') daysToAdd = 365;
+                            
+                            expiry.setDate(now.getDate() + daysToAdd); 
+                            
                             await updateDoc(doc(db, "users", user.uid), {
                                 subscriptionStart: now,
                                 subscriptionExpired: expiry
@@ -982,6 +1067,7 @@
                             userData.subscriptionExpired = Timestamp.fromDate(expiry);
                         }
 
+                        // Session
                         if(!mySessionId) {
                              mySessionId = userData.currentSessionId; 
                              if(!mySessionId || !userData.isSessionActive) establishSession(user.uid);
@@ -991,7 +1077,7 @@
                         userStats = userData.stats || {};
                         userAnsweredIds = userData.answeredIds || []; 
 
-                        document.getElementById('user-name').innerText = user.email.split('@')[0];
+                        document.getElementById('user-name').innerText = userData.displayName || user.email.split('@')[0];
                         document.getElementById('view-auth').classList.add('hidden');
                         document.getElementById('view-pending').classList.add('hidden');
                         document.getElementById('view-conflict').classList.add('hidden');
@@ -1000,117 +1086,65 @@
                              playWelcomeAnimation(userData);
                              document.getElementById('view-intro').classList.add('intro-shown');
                         } else {
-                             showView('app-layout');
-                             loadStatsUI();
+                             document.getElementById('app-layout').classList.remove('hidden');
+                             navTo('dashboard');
+                             checkSubscription(userData);
                         }
                     } else {
-                        showView('view-pending');
+                        // Pending
+                        document.getElementById('view-pending').classList.remove('hidden');
                         document.getElementById('view-auth').classList.add('hidden');
                     }
                 } else {
-                    showView('view-pending'); 
+                    document.getElementById('view-pending').classList.remove('hidden'); 
                 }
             } else {
                 currentUserUID = null;
-                userStats = {};
-                userAnsweredIds = [];
                 if(!isTrialMode) {
-                    showView('view-auth');
+                    document.getElementById('view-auth').classList.remove('hidden');
                     document.getElementById('app-layout').classList.add('hidden');
                     document.getElementById('view-pending').classList.add('hidden');
                 }
             }
         });
 
-        // --- ANIMATION LOGIC ---
-        function playWelcomeAnimation(userData) {
-            const introView = document.getElementById('view-intro');
-            const introMsg = document.getElementById('intro-msg');
-            const introCount = document.getElementById('intro-countdown');
-            const introQuote = document.getElementById('intro-quote');
-            const introStart = document.getElementById('intro-start');
-            const cntVal = document.getElementById('cnt-val');
-            const quoteText = document.getElementById('quote-text');
+        // --- 4. NAVIGATION & UI ---
+        window.navTo = (viewId) => {
+            // Cleanup previous states
+            clearInterval(questionTimerInterval);
+            clearInterval(nextQuestionInterval);
+            clearInterval(autoRedirectInterval);
+            
+            // Hide all views
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-topics').classList.add('hidden');
+            document.getElementById('view-count').classList.add('hidden');
+            document.getElementById('view-quiz').classList.add('hidden');
+            document.getElementById('view-history').classList.add('hidden');
 
-            const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-            quoteText.innerText = `"${randomQuote}"`;
-
-            introView.classList.remove('hidden');
-
-            setTimeout(() => {
-                introMsg.classList.add('hidden');
-                
-                introCount.classList.remove('hidden');
-                let count = 3;
-                const countInterval = setInterval(() => {
-                    count--;
-                    if(count > 0) {
-                        cntVal.innerText = count;
-                    } else {
-                        clearInterval(countInterval);
-                        
-                        introCount.classList.add('hidden');
-                        introQuote.classList.remove('hidden');
-
-                        setTimeout(() => {
-                            introQuote.classList.add('hidden');
-                            introStart.classList.remove('hidden');
-
-                            setTimeout(() => {
-                                introView.classList.add('fade-out'); 
-                                showView('app-layout'); 
-                                loadStatsUI();
-                                checkSubscription(userData);
-                                
-                                setTimeout(() => {
-                                    introView.classList.add('hidden');
-                                    introView.classList.remove('fade-out'); 
-                                    // Trigger Pop-out after animation
-                                    if(!isTrialMode) setTimeout(window.triggerSmartPopout, 1000);
-                                }, 800);
-                            }, 1500); 
-                        }, 3000); 
-                    }
-                }, 1000); 
-            }, 2000); 
-        }
-
-        function checkSubscription(userData) {
-            if(isTrialMode) return;
-            let startDate, expiryDate;
-            if (userData.subscriptionStart && typeof userData.subscriptionStart.toDate === 'function') {
-                startDate = userData.subscriptionStart.toDate();
-            } else if (userData.subscriptionStart) {
-                startDate = new Date(userData.subscriptionStart); 
-            } else {
-                startDate = new Date(); 
+            // Show selected
+            document.getElementById('view-' + viewId).classList.remove('hidden');
+            
+            // Titles & Sidebar Active
+            const titles = { 'dashboard':'Dashboard', 'history':'Payment History', 'topics':'PNLE Reviewer' };
+            document.getElementById('page-title').innerText = titles[viewId] || 'Reviewer';
+            
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            // Heuristic to active sidebar
+            if(viewId === 'dashboard') document.querySelectorAll('.nav-item')[0].classList.add('active');
+            if(viewId === 'topics' || viewId === 'quiz') document.querySelectorAll('.nav-item')[1].classList.add('active');
+            if(viewId === 'history') {
+                document.querySelectorAll('.nav-item')[2].classList.add('active');
+                loadHistory(); // Load data when viewing history
             }
-            if (userData.subscriptionExpired && typeof userData.subscriptionExpired.toDate === 'function') {
-                expiryDate = userData.subscriptionExpired.toDate();
-            } else if (userData.subscriptionExpired) {
-                expiryDate = new Date(userData.subscriptionExpired);
-            } else {
-                expiryDate = new Date(startDate);
-                expiryDate.setDate(startDate.getDate() + 90);
-            }
-            let today = new Date();
-            let timeDiff = expiryDate.getTime() - today.getTime();
-            let daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
-            if(daysLeft < 0) daysLeft = 0;
-            document.getElementById('days-remaining').innerText = daysLeft;
-            document.getElementById('expire-date-txt').innerText = expiryDate.toLocaleDateString();
-            let percentage = (daysLeft / 90) * 100;
-            if(percentage > 100) percentage = 100;
-            document.getElementById('days-progress').style.width = percentage + "%";
-            if(daysLeft <= 10) {
-                document.getElementById('days-remaining').style.color = "var(--danger)";
-                document.getElementById('days-progress').style.background = "var(--danger)";
-            }
-        }
 
-        window.toggleAuthMode = () => {
-            document.getElementById('form-login').classList.toggle('hidden');
-            document.getElementById('form-register').classList.toggle('hidden');
+            if(viewId === 'dashboard') {
+                loadStatsUI();
+                // Smart Popout trigger
+                setTimeout(() => {
+                    if(!isTrialMode && currentUserUID) window.triggerSmartPopout();
+                }, 1000);
+            }
         };
 
         window.toggleSidebar = () => {
@@ -1120,45 +1154,91 @@
             ov.classList.toggle('active');
         };
 
-        // --- NAVIGATION & AUTO POP OUT LOGIC ---
-        window.navTo = (viewId) => {
-            clearInterval(questionTimerInterval);
-            clearInterval(nextQuestionInterval);
-            clearInterval(autoRedirectInterval);
-            ['view-dashboard', 'view-topics', 'view-count', 'view-quiz'].forEach(id => {
-                document.getElementById(id).classList.add('hidden');
-            });
-            document.getElementById('view-' + viewId).classList.remove('hidden');
-            document.getElementById('page-title').innerText = viewId === 'dashboard' ? 'Dashboard' : 'PNLE Reviewer';
+        // --- 5. SUBSCRIPTION & HISTORY LOGIC ---
+        function checkSubscription(userData) {
+            if(isTrialMode) return;
             
-            if(viewId === 'dashboard') {
-                loadStatsUI();
-                // AUTO POP OUT TRIGGER
-                // Delay slightly so the dashboard renders first
-                setTimeout(() => {
-                    // Only trigger if not in trial mode and user is logged in
-                    if(!isTrialMode && currentUserUID) {
-                        window.triggerSmartPopout();
-                    }
-                }, 1000);
+            let expiryDate;
+            if (userData.subscriptionExpired && typeof userData.subscriptionExpired.toDate === 'function') {
+                expiryDate = userData.subscriptionExpired.toDate();
+            } else {
+                expiryDate = new Date(); // fallback
             }
-        };
 
-        function showView(id) {
-            ['view-auth', 'view-pending', 'app-layout'].forEach(v => document.getElementById(v).classList.add('hidden'));
-            document.getElementById(id).classList.remove('hidden');
+            let today = new Date();
+            let timeDiff = expiryDate.getTime() - today.getTime();
+            let daysLeft = Math.ceil(timeDiff / (1000 * 3600 * 24));
+            if(daysLeft < 0) daysLeft = 0;
+
+            document.getElementById('days-remaining').innerText = daysLeft;
+            document.getElementById('expire-date-txt').innerText = expiryDate.toLocaleDateString();
+            
+            // Calculate Total Days based on Plan for progress bar
+            let totalDays = 90;
+            if(userData.plan === '6m') totalDays = 180;
+            if(userData.plan === '1y') totalDays = 365;
+
+            let percentage = (daysLeft / totalDays) * 100;
+            if(percentage > 100) percentage = 100;
+            
+            const bar = document.getElementById('days-progress');
+            bar.style.width = percentage + "%";
+            if(daysLeft <= 10) {
+                document.getElementById('days-remaining').style.color = "var(--danger)";
+                bar.style.background = "var(--danger)";
+            }
         }
 
-        // --- NEW MODAL LOGIC FOR EXAM ---
+        async function loadHistory() {
+            const tbody = document.getElementById('history-list');
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:10px;">Loading...</td></tr>';
+
+            const docSnap = await getDoc(doc(db, "users", currentUserUID));
+            if(docSnap.exists()) {
+                const data = docSnap.data();
+                const history = data.transactionHistory || [];
+                
+                // Sort Newest First
+                history.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+                if(history.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:10px;">No transactions found.</td></tr>';
+                    return;
+                }
+
+                let html = '';
+                history.forEach(tx => {
+                    const dateObj = new Date(tx.date);
+                    const dateStr = dateObj.toLocaleDateString();
+                    const statusClass = (tx.status === 'Active' || tx.status === 'Approved') ? 'badge-active' : 'badge-pending';
+                    
+                    html += `
+                        <tr>
+                            <td>${dateStr}</td>
+                            <td>${tx.description}</td>
+                            <td style="color:var(--gold); font-family:var(--font-mono);">₱${tx.amount}</td>
+                            <td><span class="${statusClass}">${tx.status}</span></td>
+                        </tr>
+                    `;
+                });
+                tbody.innerHTML = html;
+            }
+        }
+
+        // --- 6. QUIZ ENGINE ---
+        window.selectTopic = (topic) => {
+            selectedCategory = topic;
+            isFinalExamMode = false; 
+            navTo('count');
+        };
+
         window.initFinalExam = () => {
              if(isTrialMode) { alert("This feature is for Premium users only."); return; }
              toggleSidebar();
              document.getElementById('view-exam-confirm').classList.remove('hidden');
         }
 
-        window.closeModal = (id) => {
-             document.getElementById(id).classList.add('hidden');
-        }
+        window.closeModal = (id) => { document.getElementById(id).classList.add('hidden'); }
         
         window.startFinalExamConfirmed = () => {
              closeModal('view-exam-confirm');
@@ -1173,12 +1253,6 @@
              startQuiz(100);
         }
 
-        window.selectTopic = (topic) => {
-            selectedCategory = topic;
-            isFinalExamMode = false; // Normal mode
-            navTo('count');
-        };
-
         window.startQuiz = async (limitCount) => {
             document.getElementById('view-count').classList.add('hidden');
             document.getElementById('view-loading').classList.remove('hidden');
@@ -1189,16 +1263,7 @@
 
             try {
                 let qRef = collection(db, "questions");
-                let qQuery = query(qRef, orderBy("timestamp", "desc")); 
-                
-                let querySnapshot;
-                try {
-                     querySnapshot = await getDocs(qQuery);
-                } catch(e) {
-                     console.log("Index missing, falling back to basic query");
-                     qQuery = query(qRef);
-                     querySnapshot = await getDocs(qQuery);
-                }
+                let querySnapshot = await getDocs(qRef); // Fetch all (Optimized in real app)
                 
                 let tempQuestions = [];
 
@@ -1211,19 +1276,16 @@
                     else if (detectedNP === selectedCategory) isMatch = true;
 
                     if (isMatch) {
-                        tempQuestions.push({ 
-                            id: doc.id, 
-                            ...data, 
-                            detectedCategory: detectedNP 
-                        });
+                        tempQuestions.push({ id: doc.id, ...data, detectedCategory: detectedNP });
                     }
                 });
 
+                // Filter previously answered for normal mode
                 let unAnswered = tempQuestions.filter(q => !userAnsweredIds.includes(q.id));
 
                 if (unAnswered.length === 0 && tempQuestions.length > 0) {
                      if(!isFinalExamMode) {
-                        if(confirm("You've answered ALL available questions for this category. Reset and review again?")) {
+                        if(confirm("You've answered all questions here. Reset and review again?")) {
                             unAnswered = tempQuestions; 
                         } else {
                             navTo('topics');
@@ -1231,9 +1293,11 @@
                             return;
                         }
                      } else {
-                         unAnswered = tempQuestions;
+                         unAnswered = tempQuestions; // Reuse for mock exam
                      }
-                } else if (unAnswered.length < limitCount && tempQuestions.length > 0) {
+                } 
+                // Fill up if not enough
+                else if (unAnswered.length < limitCount && tempQuestions.length > 0) {
                      const needed = limitCount - unAnswered.length;
                      const answered = tempQuestions.filter(q => userAnsweredIds.includes(q.id));
                      answered.sort(() => Math.random() - 0.5);
@@ -1272,17 +1336,15 @@
             let optionsHtml = '';
             q.options.forEach((opt, idx) => {
                 const letters = ['A', 'B', 'C', 'D'];
-                const cleanOpt = opt.trim();
                 optionsHtml += `
                     <button class="choice-btn" onclick="checkAnswer(this, ${idx})">
                         <span class="choice-key">${letters[idx]}</span>
-                        ${cleanOpt}
+                        ${opt.trim()}
                     </button>
                 `;
             });
 
             let headerText = `<span>Question ${currentIndex + 1} of ${currentQuestions.length}</span> <span style="color:var(--primary);">Score: ${score}</span>`;
-            
             if(isFinalExamMode) {
                  headerText = `<span style="color:var(--gold); font-weight:800;">FINAL EXAM: PART ${currentExamPart}/5 (${selectedCategory})</span> <span style="color:var(--text-muted);">Item ${currentIndex + 1} of 100</span>`;
             }
@@ -1307,11 +1369,11 @@
 
         function startQuestionTimer() {
             let limit = isFinalExamMode ? 72 : QUESTION_TIME_LIMIT; 
-            
             let timeLeft = limit;
             const timerFill = document.getElementById('q-timer-fill');
             timerFill.style.width = '100%';
             timerFill.className = 'timer-fill'; 
+            
             questionTimerInterval = setInterval(() => {
                 timeLeft--;
                 const percentage = (timeLeft / limit) * 100;
@@ -1334,19 +1396,15 @@
             buttons.forEach(b => b.onclick = null);
 
             let isCorrect = false;
-            let selectedText = "";
-
             if (selectedIdx >= 0 && btnElement) {
-                selectedText = btnElement.innerText.substring(2).trim(); 
-                if (q.options[selectedIdx] === q.correct || selectedText.includes(q.correct) || q.correct.includes(q.options[selectedIdx])) {
+                // Check exact match or content match
+                if (q.options[selectedIdx] === q.correct || btnElement.innerText.includes(q.correct) || q.correct.includes(q.options[selectedIdx])) {
                     isCorrect = true;
-                } else {
-                     if(btnElement.innerText.includes(q.correct)) isCorrect = true;
                 }
                 if (isCorrect) score++;
             }
 
-            // *** FINAL EXAM LOGIC: NO FEEDBACK ***
+            // FINAL EXAM: No Feedback
             if (isFinalExamMode) {
                 if(btnElement) btnElement.classList.add('choice-selected-neutral');
                 document.getElementById('next-btn').classList.remove('hidden');
@@ -1362,7 +1420,7 @@
                 return; 
             }
 
-            // --- NORMAL MODE FEEDBACK ---
+            // NORMAL MODE
             if (selectedIdx >= 0 && btnElement) {
                 if (isCorrect) {
                     btnElement.classList.add('choice-correct');
@@ -1371,6 +1429,7 @@
                     btnElement.classList.add('choice-wrong');
                 }
             }
+            // Highlight correct
             buttons.forEach((b, idx) => {
                 if(q.options[idx] === q.correct || b.innerText.includes(q.correct)) {
                     b.classList.add('choice-correct');
@@ -1438,7 +1497,7 @@
             }
         };
 
-        // --- EXAM FLOW MANAGER ---
+        // --- RESULTS & STATS ---
         window.handleExamPartFinish = () => {
              examScores[currentExamPart] = score;
              if(currentExamPart < 5) {
@@ -1472,42 +1531,27 @@
              let totalItems = 500;
              let percentage = Math.round((totalCorrect / totalItems) * 100);
 
-             let resultTitle = "EXAM FAILED";
-             let resultColor = "var(--danger)";
-             let resultIcon = "<i class='bx bxs-x-circle'></i>";
-             let message = "You did not reach the passing rate. Don't give up, Nurse.";
-
-             if (percentage >= 75) {
-                 resultTitle = "EXAM PASSED";
-                 resultColor = "var(--success)";
-                 resultIcon = "<i class='bx bxs-badge-check'></i>";
-                 message = "Congratulations! You are ready for the Board Exam.";
-             }
-
+             let resultTitle = percentage >= 75 ? "EXAM PASSED" : "EXAM FAILED";
+             let resultColor = percentage >= 75 ? "var(--success)" : "var(--danger)";
+             
              document.getElementById('view-quiz').innerHTML = `
                 <div class="card fade-in" style="text-align:center; padding:40px;">
-                    <div style="font-size:3rem; color:${resultColor}; margin-bottom:10px;">${resultIcon}</div>
+                    <div style="font-size:3rem; color:${resultColor}; margin-bottom:10px;"><i class='bx bxs-certification'></i></div>
                     <h2 style="color: white; margin-bottom:5px;">${resultTitle}</h2>
                     <div style="font-size:4rem; font-weight:800; color:${resultColor}; text-shadow: 0 0 20px ${resultColor}; margin-bottom:10px;">${percentage}%</div>
-                    <p style="color:var(--text-muted); margin-bottom:20px;">${message}</p>
                     
                     <div style="background: rgba(0,0,0,0.3); padding:15px; border-radius:12px; margin-bottom:25px; text-align:left; font-size:0.9rem;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>NP1:</span> <span>${examScores[1]}/100</span></div>
-                        <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>NP2:</span> <span>${examScores[2]}/100</span></div>
-                        <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>NP3:</span> <span>${examScores[3]}/100</span></div>
-                        <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>NP4:</span> <span>${examScores[4]}/100</span></div>
-                        <div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>NP5:</span> <span>${examScores[5]}/100</span></div>
-                        <div style="border-top:1px solid rgba(255,255,255,0.1); margin-top:5px; padding-top:5px; font-weight:bold; color:var(--gold);">
-                            <div style="display:flex; justify-content:space-between;"><span>TOTAL:</span> <span>${totalCorrect}/500</span></div>
-                        </div>
+                        <div style="display:flex; justify-content:space-between;"><span>NP1:</span> <span>${examScores[1]}/100</span></div>
+                        <div style="display:flex; justify-content:space-between;"><span>NP2:</span> <span>${examScores[2]}/100</span></div>
+                        <div style="display:flex; justify-content:space-between;"><span>NP3:</span> <span>${examScores[3]}/100</span></div>
+                        <div style="display:flex; justify-content:space-between;"><span>NP4:</span> <span>${examScores[4]}/100</span></div>
+                        <div style="display:flex; justify-content:space-between;"><span>NP5:</span> <span>${examScores[5]}/100</span></div>
                     </div>
-
                     <button onclick="navTo('dashboard')" class="btn btn-outline" style="width:100%;">Return to Dashboard</button>
                 </div>
             `;
         }
 
-        // --- NORMAL RESULTS ---
         function showResults() {
             clearInterval(questionTimerInterval);
             clearInterval(nextQuestionInterval);
@@ -1544,13 +1588,9 @@
 
         window.saveAndExit = async (shouldNavigate = true) => {
             if(isTrialMode) { if(shouldNavigate) navTo('dashboard'); return; }
-
             if(currentUserUID) {
                 try { 
-                    await updateDoc(doc(db, "users", currentUserUID), { 
-                        stats: userStats,
-                        answeredIds: userAnsweredIds
-                    }); 
+                    await updateDoc(doc(db, "users", currentUserUID), { stats: userStats, answeredIds: userAnsweredIds }); 
                     if(shouldNavigate) navTo('dashboard'); 
                 } catch (e) { console.error("Error saving stats", e); }
             }
@@ -1578,12 +1618,6 @@
                              if(pct >= 75) {
                                  welcomeTitle.innerText = "YOU ARE READY! 🎓";
                                  welcomeMsg.innerText = "Your mastery is high. Go get that license, RN!";
-                             } else if (pct >= 50) {
-                                 welcomeTitle.innerText = "Great Momentum! 💪";
-                                 welcomeMsg.innerText = "You are halfway there. Keep grinding!";
-                             } else {
-                                 welcomeTitle.innerText = "Don't Give Up! 🌱";
-                                 welcomeMsg.innerText = "Every expert was once a beginner. Keep studying.";
                              }
                         } else {
                             const offset = 220 - (220 * pct) / 100; 
@@ -1595,21 +1629,13 @@
                     const ring = document.getElementById(`ring-${c}`);
                     const txt = document.getElementById(`txt-${c}`);
                     if(ring) { ring.style.strokeDashoffset = c === 'ALL' ? 408 : 220; txt.innerText = "0%"; }
-                    if(c === 'ALL') {
-                        document.getElementById('ans-ALL').innerText = "0";
-                        welcomeTitle.innerText = "Welcome, Future RN!";
-                        welcomeMsg.innerText = "Your nursing license is just a few clicks away.";
-                    }
+                    if(c === 'ALL') document.getElementById('ans-ALL').innerText = "0";
                 }
             });
         };
 
         window.resetStats = async () => {
-            if(isTrialMode) {
-                 userStats = {};
-                 loadStatsUI();
-                 return;
-            }
+            if(isTrialMode) { userStats = {}; loadStatsUI(); return; }
             if(confirm("Reset all mastery progress AND question history? This cannot be undone.")) {
                 userStats = {};
                 userAnsweredIds = [];
@@ -1618,45 +1644,215 @@
             }
         };
 
-        // --- DID YOU KNOW / POP OUT FEATURE (UPDATED) ---
+        // --- 7. POPOUT / INTRO ANIMATION ---
+        function playWelcomeAnimation(userData) {
+            const introView = document.getElementById('view-intro');
+            const introMsg = document.getElementById('intro-msg');
+            const introCount = document.getElementById('intro-countdown');
+            const introQuote = document.getElementById('intro-quote');
+            const introStart = document.getElementById('intro-start');
+            const cntVal = document.getElementById('cnt-val');
+            const quoteText = document.getElementById('quote-text');
+
+            const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+            quoteText.innerText = `"${randomQuote}"`;
+
+            introView.classList.remove('hidden');
+
+            setTimeout(() => {
+                introMsg.classList.add('hidden');
+                introCount.classList.remove('hidden');
+                let count = 3;
+                const countInterval = setInterval(() => {
+                    count--;
+                    if(count > 0) {
+                        cntVal.innerText = count;
+                    } else {
+                        clearInterval(countInterval);
+                        introCount.classList.add('hidden');
+                        introQuote.classList.remove('hidden');
+                        setTimeout(() => {
+                            introQuote.classList.add('hidden');
+                            introStart.classList.remove('hidden');
+                            setTimeout(() => {
+                                introView.classList.add('fade-out'); 
+                                document.getElementById('app-layout').classList.remove('hidden');
+                                navTo('dashboard');
+                                checkSubscription(userData);
+                                setTimeout(() => {
+                                    introView.classList.add('hidden');
+                                    introView.classList.remove('fade-out'); 
+                                    if(!isTrialMode) setTimeout(window.triggerSmartPopout, 1000);
+                                }, 800);
+                            }, 1500); 
+                        }, 3000); 
+                    }
+                }, 1000); 
+            }, 2000); 
+        }
+
         const nursingFacts = [
-            { title: "🚑 MNEMONIC: MONA (MI)", body: "Myocardial Infarction Mgmt:<br><b>M</b> - Morphine<br><b>O</b> - Oxygen<br><b>N</b> - Nitroglycerin<br><b>A</b> - Aspirin" },
-            { title: "🩸 Lab Value: Potassium", body: "Normal: <b>3.5 - 5.0 mEq/L</b>.<br>Hypo: Muscle cramps, U-waves.<br>Hyper: Peaked T-waves, Cardiac Arrest." },
-            { title: "👶 MNEMONIC: APGAR", body: "At 1 & 5 mins:<br><b>A</b>ppearance<br><b>P</b>ulse<br><b>G</b>rimace<br><b>A</b>ctivity<br><b>R</b>espiration" },
-            { title: "💉 Lab Value: Sodium", body: "Normal: <b>135 - 145 mEq/L</b>.<br>Hyponatremia: Confusion, Seizures.<br>Hypernatremia: Thirst, Dry tongue." },
-            { title: "🔥 MNEMONIC: RACE (Fire)", body: "<b>R</b>escue patient<br><b>A</b>larm/Alert<br><b>C</b>ontain fire<br><b>E</b>xtinguish/Evacuate" },
-            { title: "💊 Digoxin Levels", body: "Therapeutic: <b>0.5 - 2.0 ng/mL</b>.<br>Toxic: >2.0 (Anorexia, N/V, Yellow/Green halos)." },
-            { title: "🦴 MNEMONIC: RICE", body: "Sprain/Strain:<br><b>R</b>est<br><b>I</b>ce<br><b>C</b>ompression<br><b>E</b>levation" },
-            { title: "🤰 MNEMONIC: HELLP", body: "Severe Preeclampsia:<br><b>H</b>emolysis<br><b>E</b>levated <b>L</b>iver enzymes<br><b>L</b>ow <b>P</b>latelets" },
-            { title: "📉 Lab Value: Hgb/Hct", body: "Male Hgb: 14-18, Hct: 42-52%<br>Female Hgb: 12-16, Hct: 37-47%<br>Low = Anemia" },
-            { title: "🩺 MNEMONIC: VEAL CHOP", body: "Fetal HR Patterns:<br><b>V</b>ariable decel = <b>C</b>ord comp.<br><b>E</b>arly decel = <b>H</b>ead comp.<br><b>A</b>cceleration = <b>O</b>kay!<br><b>L</b>ate decel = <b>P</b>lacental insuff." },
-            { title: "🧪 Lab Value: BUN/Crea", body: "BUN: 10-20 mg/dL<br>Creatinine: 0.6-1.2 mg/dL<br>Elevated = Kidney Impairment" },
-            { title: "🧴 MNEMONIC: BUBBLE HE", body: "Postpartum Assessment:<br><b>B</b>reast, <b>U</b>terus, <b>B</b>ladder, <b>B</b>owel, <b>L</b>ochia, <b>E</b>pisiotomy, <b>H</b>oman's, <b>E</b>motional" },
-            { title: "🧠 Cranial Nerves", body: "<b>O</b>h <b>O</b>h <b>O</b>h <b>T</b>o <b>T</b>ouch <b>A</b>nd <b>F</b>eel <b>V</b>ery <b>G</b>ood <b>V</b>elvet <b>A</b>h <b>H</b>eaven" },
-            { title: "💉 Lab Value: WBC", body: "Normal: <b>5,000 - 10,000 /mm3</b>.<br>High (Leukocytosis) = Infection.<br>Low (Leukopenia) = Immune risk." },
-            { title: "👶 MNEMONIC: TORCH", body: "Infections crossing placenta:<br><b>T</b>oxoplasmosis<br><b>O</b>ther (Syphilis, HepB)<br><b>R</b>ubella<br><b>C</b>ytomegalovirus<br><b>H</b>erpes" },
-            { title: "🩸 ABG Normal Values", body: "pH: 7.35-7.45<br>PaCO2: 35-45<br>HCO3: 22-26<br>PaO2: 80-100" },
-            { title: "💊 Lithium Levels", body: "Therapeutic: <b>0.6 - 1.2 mEq/L</b>.<br>Toxic: >1.5 (Tremors, Confusion, Polyuria)." },
-            { title: "🦴 MNEMONIC: 5 P's", body: "Neurovascular Assess (Fracture):<br><b>P</b>ain, <b>P</b>ulse, <b>P</b>allor, <b>P</b>aresthesia, <b>P</b>aralysis" },
-            { title: "💧 Lab Value: Calcium", body: "Normal: <b>8.5 - 10.5 mg/dL</b>.<br>Hypo: Tetany, Trousseau's, Chvostek's.<br>Hyper: Weakness, Kidney stones." },
-            { title: "🧬 MNEMONIC: CANE", body: "Cane walking:<br><b>C</b>ane<br><b>A</b>pposite (Opposite)<br><b>N</b>ew<br><b>E</b>xtremity (Weak leg moves with cane)" }
+            // =========================================
+            // BATCH 1: FUNDAMENTALS & BASICS
+            // =========================================
+            { title: "💉 Injections: Angles", body: "<b>IM</b>: 90 degrees<br><b>SQ</b>: 45 or 90 degrees<br><b>IV</b>: 25 degrees<br><b>ID</b>: 10-15 degrees" },
+            { title: "🦴 Crutch Walking: Stairs", body: "<b>UP</b> with the <b>GOOD</b> leg.<br><b>DOWN</b> with the <b>BAD</b> leg.<br>(Good goes to heaven, bad goes to hell)." },
+            { title: "🦯 Cane Walking: COAL", body: "<b>C</b>ane<br><b>O</b>pposite<br><b>A</b>ffected<br><b>L</b>eg" },
+            { title: "🩸 Blood Transfusion", body: "Only use <b>0.9% NaCl (Normal Saline)</b> with blood.<br>Stay with patient for first 15 mins.<br>Reaction? Stop infusion immediately!" },
+            { title: "🔥 RACE (Fire Safety)", body: "<b>R</b>escue patient<br><b>A</b>larm/Alert<br><b>C</b>ontain fire<br><b>E</b>xtinguish/Evacuate" },
+            { title: "🧯 PASS (Fire Extinguisher)", body: "<b>P</b>ull the pin<br><b>A</b>im at base<br><b>S</b>queeze handle<br><b>S</b>weep side to side" },
+            { title: "🛌 Bed Positions", body: "<b>Fowler's</b>: Dyspnea/Feeding.<br><b>Trendelenburg</b>: Hypotension/Prolapsed Cord.<br><b>Sims</b>: Enema/Rectal exam." },
+            { title: "🧪 Order of Draw", body: "<b>Y</b>ellow (Blood Culture)<br><b>L</b>ight Blue (Coag)<br><b>R</b>ed (Serum)<br><b>G</b>reen (Heparin)<br><b>L</b>avender (CBC)<br><b>G</b>rey (Glucose)" },
+            
+            // --- MATERNAL & CHILD (MCN) ---
+            { title: "👶 APGAR Score", body: "<b>A</b>ppearance, <b>P</b>ulse, <b>G</b>rimace, <b>A</b>ctivity, <b>R</b>espiration.<br>Assess at 1 & 5 mins.<br>Score 7-10: Good." },
+            { title: "🤰 Naegele's Rule", body: "EDD = <b>LMP + 7 days - 3 months</b>.<br>(Adjust year if needed)." },
+            { title: "🤱 GTPAL", body: "<b>G</b>ravida (# pregnancies)<br><b>T</b>erm births (37+ wks)<br><b>P</b>reterm (20-37 wks)<br><b>A</b>bortions (<20 wks)<br><b>L</b>iving children" },
+            { title: "🩸 Lochia Stages", body: "1. <b>Rubra</b> (Red, 1-3 days)<br>2. <b>Serosa</b> (Pink/Brown, 4-10 days)<br>3. <b>Alba</b> (White/Yellow, 11-21 days)" },
+            { title: "🩺 VEAL CHOP", body: "<b>V</b>ariable=<b>C</b>ord Comp<br><b>E</b>arly=<b>H</b>ead Comp (OK)<br><b>A</b>ccel=<b>O</b>xygenated (OK)<br><b>L</b>ate=<b>P</b>lacenta Insuff (Bad!)" },
+            { title: "🧴 BUBBLE HE", body: "Postpartum check: <b>B</b>reasts, <b>U</b>terus, <b>B</b>ladder, <b>B</b>owel, <b>L</b>ochia, <b>E</b>pisiotomy, <b>H</b>oman's, <b>E</b>motional." },
+            { title: "🦠 TORCH Infections", body: "Crosses Placenta: <b>T</b>oxoplasmosis, <b>O</b>ther (Syphilis, HepB), <b>R</b>ubella, <b>C</b>MV, <b>H</b>erpes." },
+            { title: "👶 Fontanels", body: "<b>Anterior</b>: Diamond, closes 12-18 mos.<br><b>Posterior</b>: Triangle, closes 2-3 mos." },
+            
+            // --- MED-SURG: CARDIO & RESP ---
+            { title: "🚑 MONA (MI Management)", body: "<b>M</b>orphine, <b>O</b>xygen, <b>N</b>itroglycerin, <b>A</b>spirin.<br>(Priority usually O2 first, but follow protocol)." },
+            { title: "❤️ Heart Sounds", body: "<b>S1 (Lub)</b>: Closure of AV valves (Mitral/Tricuspid).<br><b>S2 (Dub)</b>: Closure of Semilunar valves (Aortic/Pulmonic)." },
+            { title: "💔 Heart Failure Sides", body: "<b>Left</b> = <b>L</b>ungs (Crackles, Dyspnea).<br><b>Right</b> = <b>R</b>est of body (Edema, JVD, Hepatomegaly)." },
+            { title: "💊 TB Meds (RIPE)", body: "<b>R</b>ifampin (Red/Orange urine)<br><b>I</b>soniazid (Neuritis - take B6)<br><b>P</b>yrazinamide (Uric acid)<br><b>E</b>thambutol (Eye/Vision issues)" },
+            
+            // --- MED-SURG: NEURO & ENDO ---
+            { title: "🧠 Cushing's Triad", body: "Increased ICP signs:<br>1. Hypertension (Widening Pulse Pressure)<br>2. Bradycardia<br>3. Irregular Respirations" },
+            { title: "🤕 Glasgow Coma Scale", body: "Eye (4), Verbal (5), Motor (6).<br>Max: 15 (Fully awake).<br>Min: 3 (Coma).<br><b>Score 8 or less = Intubate</b>." },
+            { title: "🦋 SLE (Lupus)", body: "Classic Sign: <b>Butterfly Rash</b> on face.<br>Major trigger: Sunlight (UV exposure)." },
+            { title: "🍭 Diabetes: 3 Ps", body: "Hyperglycemia signs:<br><b>P</b>olyuria (Excess peeing)<br><b>P</b>olydipsia (Excess thirst)<br><b>P</b>olyphagia (Excess hunger)" },
+            { title: "🍬 Hypoglycemia", body: "Cold and Clammy = Need some Candy.<br>Hot and Dry = Sugar is High." },
+            { title: "💉 Insulin Mixing", body: "<b>Clear before Cloudy</b>.<br>Draw Regular (Clear) first, then NPH (Cloudy)." },
+            
+            // --- MED-SURG: GI & RENAL ---
+            { title: "🥔 Appendicitis", body: "Pain at <b>McBurney's Point</b> (RLQ).<br>Sign: <b>Rovsing's Sign</b> (Palpate LLQ -> Pain RLQ)." },
+            { title: "🥩 Cholecystitis", body: "Gallbladder inflammation.<br>Sign: <b>Murphy's Sign</b> (Pain on deep inspiration while palpating RUQ)." },
+            { title: "🩸 Pancreatitis Signs", body: "<b>Cullen's Sign</b>: Ecchymosis at umbilicus.<br><b>Grey Turner's</b>: Ecchymosis at flank." },
+            { title: "🧪 Renal Failure Phases", body: "1. Oliguric (Low output, High K+)<br>2. Diuretic (High output, Low K+)<br>3. Recovery" },
+            
+            // --- ELECTROLYTES & LABS ---
+            { title: "🍌 Hyperkalemia", body: "<b>MURDER</b>: Muscle cramps, Urine abn, Resp distress, Decreased cardiac contractility, EKG changes (Peaked T), Reflexes." },
+            { title: "🥛 Hypocalcemia", body: "<b>CATS</b>: Convulsions, Arrhythmias, Tetany, Spasms.<br>Positive <b>Chvostek's</b> & <b>Trousseau's</b>." },
+            { title: "🧂 Hypernatremia", body: "<b>FRIED</b>: Flushed skin, Restless, Increased BP, Edema, Decreased urine." },
+            { title: "🧪 Normal Potassium", body: "<b>3.5 - 5.0 mEq/L</b>.<br>Critical for heart function. Never give IV push!" },
+            { title: "🧪 Normal Sodium", body: "<b>135 - 145 mEq/L</b>.<br>Affects Brain/CNS (Seizures)." },
+            { title: "🧪 ABG Analysis", body: "<b>ROME</b>:<br><b>R</b>espiratory <b>O</b>pposite (pH & CO2 opposite)<br><b>M</b>etabolic <b>E</b>qual (pH & HCO3 same)." },
+            
+            // --- PHARMACOLOGY ---
+            { title: "💊 Digoxin", body: "Cardiac Glycoside.<br>Range: <b>0.5 - 2.0 ng/mL</b>.<br>Toxicity: N/V, Anorexia, <b>Yellow/Green halos</b>.<br>Check Apical Pulse (Hold if <60)." },
+            { title: "💊 Lithium", body: "Bipolar Med.<br>Range: <b>0.6 - 1.2 mEq/L</b>.<br>Toxic > 1.5.<br>Maintain Sodium & Fluid intake." },
+            { title: "🩸 Antidotes", body: "Warfarin -> <b>Vitamin K</b><br>Heparin -> <b>Protamine Sulfate</b><br>Mag Sulfate -> <b>Calcium Gluconate</b><br>Acetaminophen -> <b>Acetylcysteine</b>" },
+            { title: "💊 6 Rights of Meds", body: "Right: <b>Patient, Drug, Dose, Route, Time, Documentation</b>." },
+            { title: "🧀 MAOIs & Tyramine", body: "Avoid Tyramine foods (Aged cheese, wine, cured meat) to prevent <b>Hypertensive Crisis</b>." },
+            
+            // --- ISOLATION PRECAUTIONS ---
+            { title: "🌬️ Airborne Precautions", body: "<b>MTV</b>: <b>M</b>easles, <b>T</b>B, <b>V</b>aricella.<br>Req: N95 Mask, Negative Pressure Room." },
+            { title: "💦 Droplet Precautions", body: "<b>SPIDERMAN</b>: Sepsis, Pertussis, Influenza, Diphtheria, Epiglottitis, Rubella, Mumps, Adenovirus.<br>Req: Surgical Mask." },
+            { title: "👐 Contact Precautions", body: "<b>MRS. WEE</b>: MRSA, RSV, Skin infections, Wound infections, Enteric (C.Diff), Eye infections.<br>Req: Gown & Gloves." },
+            { title: "😷 PPE Donning", body: "Up the body: <b>Gown -> Mask -> Goggles -> Gloves</b>." },
+            { title: "😷 PPE Doffing", body: "Alphabetical: <b>Gloves -> Goggles -> Gown -> Mask</b>." },
+            
+            // --- EMERGENCY / TRIAGE ---
+            { title: "🏥 Triage Tags", body: "<b>Red</b>: Emergent (Life-threatening)<br><b>Yellow</b>: Urgent (Wait 30m-2h)<br><b>Green</b>: Non-urgent (Walking wounded)<br><b>Black</b>: Dead/Expectant" },
+            { title: "💀 Signs of Death", body: "<b>Rigor Mortis</b> (Stiffening)<br><b>Algor Mortis</b> (Cooling)<br><b>Livor Mortis</b> (Discoloration/Pooling)" },
+            
+            // --- PSYCH ---
+            { title: "🗣️ Schizophrenia", body: "<b>Positive Sx</b>: Hallucinations, Delusions (Added to reality).<br><b>Negative Sx</b>: Apathy, Withdrawal (Taken away)." },
+            { title: "🛡️ Defense Mechanisms", body: "<b>Projection</b>: Attributing own faults to others.<br><b>Displacement</b>: Taking anger out on safer target.<br><b>Regression</b>: Going back to child-like behavior." },
+            
+            // --- MISC ---
+            { title: "🔥 Burn: Rule of 9s", body: "Head: 9%<br>Arms: 9% each<br>Legs: 18% each<br>Torso: 36% (18 front/18 back)<br>Genitals: 1%" },
+            { title: "🦴 5 P's (Fracture)", body: "Assess for Compartment Syndrome:<br><b>P</b>ain, <b>P</b>ulse, <b>P</b>allor, <b>P</b>aresthesia, <b>P</b>aralysis." },
+            { title: "🧠 Meningitis Signs", body: "<b>Kernig's</b>: Pain extending leg when hip flexed.<br><b>Brudzinski's</b>: Neck flexion causes hip flexion." },
+
+            // =========================================
+            // BATCH 2: ADVANCED & COMPLICATIONS
+            // =========================================
+            { title: "🧸 Intussusception", body: "Classic Sign: <b>Currant Jelly Stool</b> (Blood + Mucus).<br>Symptom: Sausage-shaped mass in RUQ." },
+            { title: "🧸 Pyloric Stenosis", body: "Classic Sign: <b>Olive-shaped mass</b> in epigastrium.<br>Symptom: Projectile vomiting after feeding." },
+            { title: "🧸 Hirschsprung's", body: "Classic Sign: <b>Ribbon-like stool</b> (Aganglionic megacolon).<br>Newborn: Failure to pass meconium." },
+            { title: "🧸 Tetralogy of Fallot", body: "<b>PROVe</b>:<br><b>P</b>ulmonary stenosis<br><b>R</b>ight Ventricular Hypertrophy<br><b>O</b>verriding Aorta<br><b>V</b>entricular Septal Defect." },
+            { title: "🧸 Epiglottitis", body: "<b>Medical Emergency!</b><br>Signs: Drooling, Dysphagia, Dysphonia.<br><b>NEVER</b> examine the throat with a tongue depressor." },
+            { title: "🧸 Wilms Tumor", body: "Nephroblastoma (Kidney tumor).<br><b>NEVER palpate the abdomen</b> to prevent rupture/metastasis." },
+            { title: "🧸 Kawasaki Disease", body: "Signs: <b>Strawberry Tongue</b>, High fever, Peeling skin.<br>Mgmt: IVIG and Aspirin." },
+            { title: "🧸 Celiac Disease", body: "Avoid Gluten (<b>BROW</b>):<br><b>B</b>arley, <b>R</b>ye, <b>O</b>ats, <b>W</b>heat.<br>Rice and Corn are okay." },
+            
+            // --- OBSTETRICS COMPLICATIONS ---
+            { title: "🩸 Placenta Previa", body: "Placenta covers cervix.<br>Sign: <b>Painless</b> bright red bleeding.<br><b>NO</b> vaginal exams!" },
+            { title: "🩸 Abruptio Placentae", body: "Placenta detaches prematurely.<br>Sign: <b>Painful</b>, dark red bleeding, <b>Board-like abdomen</b>." },
+            { title: "🤰 Ectopic Pregnancy", body: "Implantation outside uterus.<br>Classic Sign: <b>Unilateral Shoulder Tip Pain</b> (due to blood irritating diaphragm)." },
+            { title: "🍇 H-Mole (Molar)", body: "Gestational Trophoblastic Disease.<br>Sign: <b>Grape-like vesicles</b>, High HCG, 'Snowstorm' pattern on ultrasound." },
+            { title: "🤱 True vs False Labor", body: "<b>True Labor</b>: Regular contractions + <b>Cervical Dilation/Effacement</b>.<br><b>False Labor</b>: Irregular, stops with walking." },
+            { title: "🤰 RhoGAM", body: "Given to <b>Rh Negative (-) mom</b> with <b>Rh Positive (+) baby</b>.<br>Given at 28 weeks and within 72hrs post-delivery." },
+            { title: "👶 Leopold's Maneuvers", body: "1. Fundal Grip (What part is at top?)<br>2. Umbilical Grip (Where is the back?)<br>3. Pawlik's Grip (Engaged?)<br>4. Pelvic Grip (Cephalic Prominence?)" },
+            
+            // --- ENDOCRINE DISORDERS ---
+            { title: "🌙 Cushing's Syndrome", body: "Excess Cortisol.<br>Signs: <b>Moon Face</b>, Buffalo Hump, Purple Striae, Truncal Obesity." },
+            { title: "🟤 Addison's Disease", body: "Low Cortisol/Aldosterone.<br>Signs: <b>Bronze Skin</b>, Hypotension, Hypoglycemia.<br>Crisis: Severe shock." },
+            { title: "👀 Graves' Disease", body: "Hyperthyroidism.<br>Classic Sign: <b>Exophthalmos</b> (Bulging eyes).<br>High metabolism, heat intolerance." },
+            { title: "🐢 Hypothyroidism", body: "Myxedema.<br>Signs: Weight gain, Cold intolerance, Lethargy, Dry skin." },
+            { title: "🚽 Diabetes Insipidus", body: "Low ADH.<br>Signs: <b>Polyuria</b> (excess pee), Polydipsia, dilute urine.<br>Risk: Dehydration." },
+            { title: "💧 SIADH", body: "High ADH.<br>Signs: <b>Oliguria</b> (low pee), Water retention, Dilutional Hyponatremia." },
+            
+            // --- NEUROLOGICAL ---
+            { title: "🧠 Myasthenia Gravis", body: "Descending weakness (Mind to Ground).<br>Sign: <b>Ptosis</b> (droopy eyelid).<br>Priority: Aspiration/Respiratory failure." },
+            { title: "🧠 Guillain-Barré", body: "Ascending weakness (Ground to Brain).<br>Usually post-viral infection.<br>Priority: Respiratory failure." },
+            { title: "🤯 Autonomic Dysreflexia", body: "Spinal Cord Injury (T6 or higher).<br>Trigger: <b>Full Bladder</b> or Fecal Impaction.<br>Sign: Severe HTN, Pounding Headache." },
+            { title: "🧠 Stroke (CVA)", body: "<b>FAST</b>:<br><b>F</b>ace drooping<br><b>A</b>rm weakness<br><b>S</b>peech difficulty<br><b>T</b>ime to call 911." },
+            { title: "🧠 Increased ICP", body: "Avoid: Coughing, Straining (Valsalva), Neck flexion.<br>Position: Head elevated 30 degrees (neutral)." },
+            
+            // --- GI DISORDERS ---
+            { title: "🤢 Dumping Syndrome", body: "Rapid gastric emptying.<br>Prevention: Low carb, No fluids with meals, <b>Lie down after eating</b>." },
+            { title: "🔥 GERD", body: "Acid reflux.<br>Prevention: Sit up after meals, small frequent meals, avoid caffeine/mint." },
+            { title: "🍺 Liver Cirrhosis", body: "Ammonia buildup causes <b>Hepatic Encephalopathy</b>.<br>Sign: <b>Asterixis</b> (Flapping hand tremor)." },
+            
+            // --- PROCEDURES & POSITIONS ---
+            { title: "💉 Thoracentesis", body: "Removal of fluid from pleural space.<br>Position: <b>Sitting up, leaning over bedside table</b>." },
+            { title: "💉 Lumbar Puncture", body: "Spinal tap.<br>Position: <b>Fetal position</b> (C-shape) during.<br>Post-op: <b>Flat on bed</b> (prevent headache)." },
+            { title: "🚿 Enema Administration", body: "Position: <b>Left Lateral Sims</b>.<br>If cramping occurs: Clamp tube briefly, then resume slower." },
+            { title: "🦵 Amputation", body: "First 24h: Elevate (prevent swelling).<br>After 24h: <b>Prone</b> position (prevent hip contracture)." },
+            
+            // --- PHARMACOLOGY BATCH 2 ---
+            { title: "💊 Nitroglycerin", body: "For Angina. Take 1 tab sublingual q5min x 3 doses.<br>Store in dark glass bottle.<br>Side Effect: <b>Headache</b>." },
+            { title: "💊 Phenytoin (Dilantin)", body: "Anticonvulsant.<br>Therapeutic Level: 10-20 mcg/mL.<br>Side Effect: <b>Gingival Hyperplasia</b> (Gum overgrowth)." },
+            { title: "💊 Furosemide (Lasix)", body: "Loop Diuretic.<br>Risk: <b>Hypokalemia</b> (Low Potassium).<br>Eat bananas/potatoes." },
+            { title: "💊 Spironolactone", body: "Potassium-Sparing Diuretic.<br>Risk: <b>Hyperkalemia</b>.<br>Avoid salt substitutes." },
+            { title: "💊 ACE Inhibitors", body: "End in -pril (e.g., Enalapril).<br>Common Side Effect: <b>Dry, hacking cough</b>.<br>Adverse: Angioedema." },
+            
+            // --- NUTRITION ---
+            { title: "🍚 Diet Types", body: "<b>Clear Liquid</b>: See-through (Jello, Broth).<br><b>Full Liquid</b>: Milk, Ice cream.<br><b>Low Residue</b>: Low fiber (No seeds/nuts)." },
+            { title: "🧂 DASH Diet", body: "For Hypertension.<br>Low Sodium, High fruits/veggies, Low fat dairy." },
+            { title: "🥔 Renal Diet", body: "Low Protein, Low Sodium, Low Potassium, Low Phosphorus." },
+            
+            // --- ETHICS & LEGAL ---
+            { title: "⚖️ Informed Consent", body: "<b>Doctor</b>: Explains procedure/risks.<br><b>Nurse</b>: Witness signature & verify understanding.<br><b>Patient</b>: Gives consent voluntarily." },
+            { title: "⚖️ Advance Directives", body: "<b>Living Will</b>: Pt wishes for life support.<br><b>DPA</b>: Proxy person to decide if pt cannot." },
+            { title: "⚖️ Ethical Principles", body: "<b>Autonomy</b>: Right to choose.<br><b>Beneficence</b>: Do good.<br><b>Non-maleficence</b>: Do no harm.<br><b>Veracity</b>: Truth telling." },
+            { title: "⚖️ Negligence vs Malpractice", body: "<b>Negligence</b>: Failure to act as prudent person.<br><b>Malpractice</b>: Professional negligence (harm caused)." },
+            
+            // --- DELEGATION & PRIORITIZATION ---
+            { title: "📋 Delegation: RN", body: "<b>EAT</b>: <b>E</b>valuate, <b>A</b>ssess, <b>T</b>each.<br>Cannot delegate unstable patients." },
+            { title: "📋 Delegation: LPN/LVN", body: "Can do: Sterile procedures (Foley/Wound), Meds (Oral/IM), Stable patients.<br>Cannot do: IV push, Blood, Initial assessment." },
+            { title: "📋 Delegation: UAP/CNA", body: "Can do: ADLs, Ambulation, Vitals (Stable), Feeding (non-aspiration risk).<br>Standard, unchanging procedures." },
+            { title: "🚨 Prioritization", body: "<b>ABCs</b>: Airway, Breathing, Circulation.<br><b>Maslow</b>: Physiological first (Pain is usually psychosocial unless acute/MI)." },
+            { title: "📝 Incident Report", body: "Internal document for risk mgmt.<br><b>NEVER</b> mention the incident report in the patient's medical chart." }
         ];
 
         window.triggerSmartPopout = () => {
             const el = document.getElementById('view-popout');
-            if(!el.classList.contains('hidden')) return; // Avoid double pop
-            
+            if(!el.classList.contains('hidden')) return;
             const rand = Math.floor(Math.random() * nursingFacts.length);
             const fact = nursingFacts[rand];
-            
             document.getElementById('fact-title').innerHTML = fact.title;
             document.getElementById('fact-body').innerHTML = fact.body;
             el.classList.remove('hidden');
         };
 
-        window.closePopout = () => {
-            document.getElementById('view-popout').classList.add('hidden');
-        };
+        window.closePopout = () => { document.getElementById('view-popout').classList.add('hidden'); };
 
         // Helper
         function getNPCategory(rawCategory) {
@@ -1664,10 +1860,10 @@
             const upper = rawCategory.toUpperCase();
             if (['NP1', 'NP2', 'NP3', 'NP4', 'NP5'].includes(upper)) return upper;
             const lower = rawCategory.toLowerCase();
-            if (lower.includes('psych') || lower.includes('mental') || lower.includes('behav')) return 'NP5';
-            if (lower.includes('fund') || lower.includes('comm') || lower.includes('chn') || lower.includes('ethic')) return 'NP1';
-            if (lower.includes('mater') || lower.includes('mcn') || lower.includes('pedia') || lower.includes('fam')) return 'NP2';
-            if (lower.includes('cardio') || lower.includes('resp') || lower.includes('neuro') || lower.includes('crit') || lower.includes('surg')) return 'NP4';
+            if (lower.includes('psych') || lower.includes('mental')) return 'NP5';
+            if (lower.includes('fund') || lower.includes('comm')) return 'NP1';
+            if (lower.includes('mater') || lower.includes('pedia')) return 'NP2';
+            if (lower.includes('cardio') || lower.includes('surg')) return 'NP4';
             return 'NP3'; 
         }
     </script>
